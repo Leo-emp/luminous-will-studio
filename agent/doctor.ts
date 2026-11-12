@@ -29,8 +29,8 @@ export const doctor = (d: Deps, opts: { cloud?: boolean } = {}) => {
   for (const t of ['ffmpeg', 'ffprobe']) add(t, d.tool(t), `install ${t} and put it on PATH (winget install Gyan.FFmpeg)`)
   const fonts = FONT_FILES.filter((f) => !d.has(join(PUBLIC_DIR, f.file))).map((f) => f.file)
   add('fonts', fonts.length === 0, `missing in public/: ${fonts.join(', ')}`)
-  const sfx = SFX_NAMES.filter((n) => !d.has(join(PUBLIC_DIR, 'sfx', 'cc', `${n}.wav`)))
-  add('sound effects', sfx.length === 0, `missing public/sfx/cc/: ${sfx.join(', ')}`)
+  const sfx = SFX_NAMES.filter((n) => !d.has(join(PUBLIC_DIR, 'sfx', 'lw', `${n}.wav`)))
+  add('sound effects', sfx.length === 0, `missing public/sfx/lw/: ${sfx.join(', ')}`)
   const gb = d.freeGB()
   // # laptop renders need room for every chunk; cloud renders only for what comes back
   const minGB = opts.cloud ? MIN_FREE_GB_CLOUD : MIN_FREE_GB

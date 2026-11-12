@@ -1,7 +1,7 @@
 // ============================================================
-// BRAND — LW Studio must stand on its own: no CapitalCode names
-// in the code, no imports reaching outside this repo, and cloud
-// renders pointed at LW's own GitHub repo.
+// BRAND — LW Studio must stand on its own: no source-project
+// names or prefixes in the code, no imports reaching outside this
+// repo, and cloud renders pointed at LW's own GitHub repo.
 // ============================================================
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
@@ -24,6 +24,12 @@ const ALL = FOLDERS.flatMap((f) => files(join(ROOT, f)))
 describe('LW stands alone', () => {
   it('no CapitalCode names in code', () => {
     const bad = ALL.filter((p) => /capitalcode|CapitalCode|CAPITALCODE|\bCC_[A-Z]/.test(readFileSync(p, 'utf8')))
+    expect(bad.map((p) => relative(ROOT, p))).toEqual([])
+  })
+
+  it('no source-project prefixes (cloud site names, sfx folder)', () => {
+    // # a shared prefix like cc- would let LW delete the other project's cloud bundles
+    const bad = ALL.filter((p) => /['"`]cc-|sfx\/cc\b/.test(readFileSync(p, 'utf8')))
     expect(bad.map((p) => relative(ROOT, p))).toEqual([])
   })
 

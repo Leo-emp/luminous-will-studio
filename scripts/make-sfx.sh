@@ -2,11 +2,11 @@
 # ============================================================
 # CODE-GENERATED SOUND EFFECTS for Luminous Will (free, no licences).
 # Every effect ends in a limiter at 0.85 (≈ -1.4 dBFS) so nothing
-# clips under the voice. Output: public/sfx/cc/<name>.wav
+# clips under the voice. Output: public/sfx/lw/<name>.wav
 # Usage: bash scripts/make-sfx.sh
 # ============================================================
 set -euo pipefail
-OUT="$(dirname "$0")/../public/sfx/cc"
+OUT="$(dirname "$0")/../public/sfx/lw"
 mkdir -p "$OUT"
 LIM="alimiter=limit=0.85:level=false"
 ff() { ffmpeg -v error -y "$@"; }

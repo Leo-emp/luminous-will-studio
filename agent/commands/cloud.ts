@@ -37,7 +37,7 @@ register('cloud', 'cloud setup|status  — prepare AWS Lambda + GitHub Actions r
     const fns = await getFunctions({ region: aws.region, compatibleOnly: true })
     const { sites } = await getSites({ region: aws.region })
     const wf = spawnSync('gh', ['workflow', 'view', 'render.yml', '-R', GH_REPO], { encoding: 'utf8' })
-    return result({ ok: fns.length > 0 && wf.status === 0, region: aws.region, lambdas: fns.map((f) => f.functionName), sites: sites.filter((s) => s.id.startsWith('cc-')).map((s) => s.id), githubWorkflow: wf.status === 0 })
+    return result({ ok: fns.length > 0 && wf.status === 0, region: aws.region, lambdas: fns.map((f) => f.functionName), sites: sites.filter((s) => s.id.startsWith('lw-')).map((s) => s.id), githubWorkflow: wf.status === 0 })
   }
   refuse('use: cloud setup | cloud status')
 })

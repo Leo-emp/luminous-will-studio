@@ -42,7 +42,7 @@ describe('jobs', () => {
 
 // # writeJson makes missing folders (research writes into temp/research on a fresh clone)
 test('writeJson creates missing parent folders', () => {
-  const file = join(mkdtempSync(join(tmpdir(), 'cc-')), 'a', 'b', 'x.json')
+  const file = join(mkdtempSync(join(tmpdir(), 'lw-')), 'a', 'b', 'x.json')
   writeJson(file, { ok: 1 })
   expect(readJson(file)).toEqual({ ok: 1 })
 })

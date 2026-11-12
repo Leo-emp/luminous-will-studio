@@ -39,7 +39,7 @@ test('criticRound counts archived verdicts (critic_round<N>.json) plus the curre
   const { mkdtempSync, writeFileSync } = await import('node:fs')
   const { tmpdir } = await import('node:os')
   const { join } = await import('node:path')
-  const d = mkdtempSync(join(tmpdir(), 'cc-'))
+  const d = mkdtempSync(join(tmpdir(), 'lw-'))
   writeFileSync(join(d, 'critic.json'), '{}')
   expect(criticRound(d)).toBe(1)
   writeFileSync(join(d, 'critic_round1.json'), '{}')

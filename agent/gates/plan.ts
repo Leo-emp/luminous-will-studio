@@ -80,7 +80,7 @@ export const oldStyle = (C: unknown) => typeof C === 'function' && /\b(Stages|Ex
 export const GENERIC_ICONS = ['question', 'exclamation', 'tick', 'cross', 'warning', 'magnifier', 'clock', 'calendar']
 
 export const sfxAvailable = (): string[] => {
-  const d = join(PUBLIC_DIR, 'sfx', 'cc')
+  const d = join(PUBLIC_DIR, 'sfx', 'lw')
   return existsSync(d) ? readdirSync(d).filter((f) => f.endsWith('.wav')).map((f) => f.replace(/\.wav$/, '')) : []
 }
 

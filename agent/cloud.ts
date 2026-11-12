@@ -77,13 +77,13 @@ export const SITE_KEEP_HOURS = 12
 export const ensureSite = async (log: (s: string) => void) => {
   const { deploySite, getSites, deleteSite } = await lambda()
   const { region, bucketName } = await ensureBucket()
-  const siteName = `cc-${artHash()}`
+  const siteName = `lw-${artHash()}`
   const { sites } = await getSites({ region })
   const have = sites.find((s) => s.id === siteName)
   // # Several sessions render in parallel (owner 2026-11-03), each with its own art version, so only sites that have
   // # not been touched for SITE_KEEP_HOURS are deleted — deleting all others broke a render mid-flight (S3 AccessDenied).
   const cutoff = Date.now() - SITE_KEEP_HOURS * 3600 * 1000
-  for (const old of sites.filter((s) => s.id !== siteName && s.id.startsWith('cc-') && (s.lastModified ?? 0) < cutoff)) await deleteSite({ region, bucketName, siteName: old.id })
+  for (const old of sites.filter((s) => s.id !== siteName && s.id.startsWith('lw-') && (s.lastModified ?? 0) < cutoff)) await deleteSite({ region, bucketName, siteName: old.id })
   if (have) return { region, bucketName, serveUrl: have.serveUrl }
   log(`cloud: uploading art bundle ${siteName}`)
   const { serveUrl } = await deploySite({ region, bucketName, siteName, entryPoint: join(ROOT, 'art', 'index.tsx'), options: { publicDir: PUBLIC_DIR } })
@@ -229,7 +229,7 @@ export const renderOnGithub = async (dir: string, props: { timeline: Timeline },
   let id = readPending(dir, 'github', key)
   if (id) log(`github: resuming ${id}`)
   else {
-    id = `cc-${Date.now().toString(36)}`
+    id = `lw-${Date.now().toString(36)}`
     await dispatch(id, parts)
     savePending(dir, { target: 'github', key, id })
   }

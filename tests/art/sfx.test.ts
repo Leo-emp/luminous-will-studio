@@ -1,10 +1,10 @@
-// # Tests for the code-generated SFX set (scripts/make-sfx.sh → public/sfx/cc/)
+// # Tests for the code-generated SFX set (scripts/make-sfx.sh → public/sfx/lw/)
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
 
-const DIR = join(import.meta.dirname, '..', '..', 'public', 'sfx', 'cc')
+const DIR = join(import.meta.dirname, '..', '..', 'public', 'sfx', 'lw')
 const SFX_NAMES = ['whoosh', 'swish', 'tick', 'pop', 'impact', 'riser', 'cash', 'glitch', 'thud', 'ding']
 
 // # ffprobe duration (s) and ffmpeg volumedetect peak (dBFS, read from stderr)

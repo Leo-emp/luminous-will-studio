@@ -27,7 +27,7 @@ const C = {
 }
 export const DEMO_FRAMES = Math.round(DEMO_WORDS[DEMO_WORDS.length - 1].e * FPS) + 36
 
-const sfx = (n: string) => staticFile(`sfx/cc/${n}.wav`)
+const sfx = (n: string) => staticFile(`sfx/lw/${n}.wav`)
 const Shop = getScene('shop-street')
 const Coin = getProp('coin').Component, ShopIcon = getProp('shop-mini').Component, Contract = getProp('contract').Component, Fire = getProp('fire').Component
 

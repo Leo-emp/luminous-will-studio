@@ -72,7 +72,7 @@ test('feedback and references are kept with the date and show in the brief', () 
 })
 
 test('memory round-trips through disk', () => {
-  const file = join(mkdtempSync(join(tmpdir(), 'cc-')), 'taste', 'learning.json')
+  const file = join(mkdtempSync(join(tmpdir(), 'lw-')), 'taste', 'learning.json')
   const m = addRule(emptyMemory(), { area: 'title', rule: 'Questions over statements', source: 'analytics' }, at)
   saveMemory(m, file)
   expect(loadMemory(file)).toEqual(m)

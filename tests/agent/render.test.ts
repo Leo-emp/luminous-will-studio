@@ -136,7 +136,7 @@ describe('chunk keys follow the art each chunk uses', () => {
 // # Old chunks from earlier plan/art versions pile up (~1 GB a video); prune keeps only the current ones
 test('pruneChunks deletes chunk files that are not in the current render', async () => {
   const { writeFileSync } = await import('node:fs')
-  const d = mkdtempSync(join(tmpdir(), 'cc-'))
+  const d = mkdtempSync(join(tmpdir(), 'lw-'))
   for (const f of ['chunk_000000_000900_aaa.mp4', 'chunk_000000_000900_old.mp4', 'chunk_000900_001800_bbb.mp4', 'audio.wav']) writeFileSync(join(d, f), 'x')
   const removed = pruneChunks(d, [join(d, 'chunk_000000_000900_aaa.mp4'), join(d, 'chunk_000900_001800_bbb.mp4')])
   expect(removed).toEqual(['chunk_000000_000900_old.mp4'])
