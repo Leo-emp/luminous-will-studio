@@ -30,7 +30,8 @@ const good = (): PlanDoc => ({
   ],
   sfx: [{ at: { sentence: 's3' }, name: 'whoosh' }],
 })
-const opts = (history: History = []) => ({ duration: DUR, history })
+// # engine fixtures use the source library (finance parts included), so the LW retired list is switched off here
+const opts = (history: History = []) => ({ duration: DUR, history, retired: new Set<string>() })
 
 describe('gatePlan', () => {
   test('a good plan passes with its stats', () => {

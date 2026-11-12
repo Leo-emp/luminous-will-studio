@@ -6,6 +6,7 @@
 // repeats a recent video (YouTube "inauthentic content" guard).
 // ============================================================
 import { existsSync, readdirSync } from 'node:fs'
+import { retiredUses } from './retired'
 import { join } from 'node:path'
 import { CAST } from '../../art/rig/Actor'
 import { EXPRESSIONS } from '../../art/rig/faces'
@@ -28,6 +29,7 @@ const CARD_OR_PIECE = ['piece', 'chapter', 'brand']
 export type History = { job: string; scenes: string[]; slides: string[]; area?: string; format?: string; kind?: string; title?: string; date?: string }[]
 export type PlanGateOpts = {
   duration: number; history: History; sfxNames?: string[]
+  retired?: ReadonlySet<string> // # LW: finance-only parts are refused (default art/retired.ts; engine tests pass an empty set)
   maxPresenterPieces?: number // # scenes the presenter may stand in (default: 2 or half of the scenes)
   slideShare?: [number, number]; median?: [number, number]; maxShot?: number; minShot?: number
   // # owner review 2026-10-24: something on screen fast, few slams, brand early
@@ -98,7 +100,7 @@ const median = (xs: number[]) => {
 
 export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => {
   // # a Short is drawn for a phone from the start: tall canvas, diorama pieces only (nothing reframed from 16:9)
-  const problems: string[] = []
+  const problems: string[] = [...retiredUses(plan, o.retired)]
   if (o.canvas && (plan.canvas ?? 'wide') !== o.canvas) problems.push(`plan.canvas must be "${o.canvas}"`)
   if (o.piecesOnly) for (const s of plan.shots) if (s.kind !== 'piece') problems.push(`${s.id}: a Short uses diorama pieces only (got "${s.kind}")`)
   const [shareMin, shareMax] = o.slideShare ?? [0.35, 0.65]

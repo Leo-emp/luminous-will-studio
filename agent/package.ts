@@ -5,6 +5,7 @@
 // Output: output/long/<Title>_YYYY-MM-DD_HH-MM/ (shorts: output/shorts/…)
 // ============================================================
 import { CAST } from '../art/rig/Actor'
+import { retiredUses } from './gates/retired'
 import { EXPRESSIONS } from '../art/rig/faces'
 import { POSE_IDS } from '../art/rig/pose'
 import { PROPS } from '../art/props/registry'
@@ -132,8 +133,10 @@ export const checkLongThumb = (t: Record<string, any>, n: string, cues: Record<s
   return p
 }
 
-export const checkMeta = (m: MetaDoc, o: { short?: boolean; cues?: Record<string, number> } = {}): string[] => {
-  const p: string[] = []
+export const checkMeta = (m: MetaDoc, o: { short?: boolean; cues?: Record<string, number>; retired?: ReadonlySet<string> } = {}): string[] => {
+  // # LW: thumbnails/covers may not use the finance-only parts (art/retired.ts)
+  const retired = retiredUses(m.thumbnails ?? [], o.retired).map((x) => `thumbnail: ${x}`)
+  const p: string[] = [...retired]
   if (m.titles?.length !== 3) p.push(`need 3 titles (got ${m.titles?.length ?? 0})`)
   ;(m.titles ?? []).forEach((t, i) => {
     if (t.length > 70) p.push(`title ${i + 1} is over 70 chars (${t.length})`)

@@ -36,7 +36,7 @@ const meta = (): MetaDoc => ({
   ],
 })
 
-test('good metadata passes', () => expect(checkMeta(meta())).toEqual([]))
+test('good metadata passes', () => expect(checkMeta(meta(), { retired: new Set() })).toEqual([])) // # fixture thumbnails use source-library props
 
 test('metadata problems are caught: count, length, thumbnail words, unknown ids, hype', () => {
   const m = meta()

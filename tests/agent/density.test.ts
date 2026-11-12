@@ -28,7 +28,7 @@ const dense = (): PlanDoc => ({
     }
   }),
 })
-const opts = { duration: DUR, history: [], ...PACE.long }
+const opts = { duration: DUR, history: [], retired: new Set<string>(), ...PACE.long } // # fixtures use the source library
 
 describe('living film density', () => {
   test('a dense plan passes the long-video pace', () => {
@@ -83,7 +83,7 @@ describe('living film density', () => {
     const plan = JSON.parse(readFileSync('tests/fixtures/indexfund/plan_v3.json', 'utf8'))
     const w = JSON.parse(readFileSync('tests/fixtures/indexfund/words.json', 'utf8'))
     const dur = w[w.length - 1].e + 0.5
-    const r = gatePlan(plan, w, { duration: dur, history: [], ...PACE.long })
+    const r = gatePlan(plan, w, { duration: dur, history: [], retired: new Set<string>(), ...PACE.long })
     for (const x of r.problems) expect(x).toMatch(/no illustration|sentences have nothing|text \d+% of runtime|median shot|shot is/)
     expect(r.problems.length).toBeGreaterThan(0)
   })
