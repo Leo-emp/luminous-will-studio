@@ -38,11 +38,17 @@ const rel = (root, p) => relative(root, p).split(sep).join('/')
 export const importEngine = ({ src, dest, dryRun = false }) => {
   // # Safety checks BEFORE anything is written
   if (!existsSync(src)) throw new Error(`source not found: ${src}`)
-  const S = realpathSync(resolve(src))
-  mkdirSync(dest, { recursive: true })
-  const D = realpathSync(resolve(dest))
-  if (S === D) throw new Error('source and destination are the same folder')
-  if (D.startsWith(S + sep)) throw new Error('destination is inside the source')
+  const S = realpathSync.native(resolve(src))
+  // # resolve dest WITHOUT creating it: real path of its nearest existing parent + the rest
+  let base = resolve(dest), rest = ''
+  while (!existsSync(base)) { rest = join(base.slice(dirname(base).length + 1), rest); base = dirname(base) }
+  const D = join(realpathSync.native(base), rest).replace(/[\\/]+$/, '')
+  // # Windows paths ignore case: compare lowercased there
+  const k = (p) => (process.platform === 'win32' ? p.toLowerCase() : p)
+  if (k(S) === k(D)) throw new Error('source and destination are the same folder')
+  if (k(D).startsWith(k(S) + sep)) throw new Error('destination is inside the source')
+  if (k(S).startsWith(k(D) + sep)) throw new Error('destination contains the source')
+  mkdirSync(D, { recursive: true })  // # only now, after every check passed
 
   const copied = [], skipped = []
   // # Walk one allowed entry, copying file by file so DENY applies everywhere

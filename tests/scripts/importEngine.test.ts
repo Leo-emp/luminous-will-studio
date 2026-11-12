@@ -35,6 +35,24 @@ describe('importEngine', () => {
     expect(() => importEngine({ src, dest: join(src, 'x') })).toThrow(/inside the source/)
   })
 
+  it('refuses an inside dest without creating it', () => {
+    const { src } = fixture()
+    expect(() => importEngine({ src, dest: join(src, 'lw') })).toThrow(/inside the source/)
+    expect(existsSync(join(src, 'lw'))).toBe(false)
+  })
+
+  it('refuses a dest that contains the source', () => {
+    const { src } = fixture()
+    expect(() => importEngine({ src, dest: dirname(src) })).toThrow(/contains the source/)
+  })
+
+  it('compares paths case-insensitively on Windows', () => {
+    if (process.platform !== 'win32') return
+    const { src } = fixture()
+    expect(() => importEngine({ src, dest: join(src.toUpperCase(), 'x') })).toThrow(/inside the source/)
+    expect(() => importEngine({ src, dest: src.toLowerCase() })).toThrow(/same folder/)
+  })
+
   it('refuses when src === dest', () => {
     const { src } = fixture()
     expect(() => importEngine({ src, dest: src })).toThrow(/same folder/)
