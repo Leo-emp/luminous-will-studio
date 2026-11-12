@@ -97,7 +97,7 @@ export const brief = (m: Memory) => {
   const active = m.rules.filter((r) => r.status === 'active').sort((a, b) => b.strength - a.strength)
   const p = preferences(m)
   const results = [...m.results].sort((a, b) => score(b) - score(a))
-  const lines = ['# CapitalCode learning brief (read before every run; obey every rule)', '']
+  const lines = ['# Luminous Will learning brief (read before every run; obey every rule)', '']
   lines.push('## Owner rules', ...(active.length ? RULE_AREAS.flatMap((area) => {
     const rs = active.filter((r) => r.area === area)
     return rs.length ? [`**${area}**`, ...rs.map((r) => `- [${r.id}${r.strength > 1 ? ` ×${r.strength}` : ''}, ${r.source}] ${r.rule}${r.ban ? ` _(gate bans "${r.ban}")_` : ''}`)] : []

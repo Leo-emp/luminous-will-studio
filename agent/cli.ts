@@ -1,5 +1,5 @@
 // ============================================================
-// CAPITALCODE AGENT CLI — the hands. Claude Code (the director)
+// LUMINOUS WILL STUDIO CLI — the hands. Claude Code (the director)
 // calls these commands; each validates, does deterministic work,
 // and ends with RESULT_JSON. Usage:
 //   npx tsx agent/cli.ts <command> [job-dir] [options]

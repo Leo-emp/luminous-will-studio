@@ -6,10 +6,11 @@ import { Emblem } from '../../art/logo/Emblem'
 import { Wordmark } from '../../art/logo/Wordmark'
 import { COLORS } from '../../art/tokens'
 
-test('emblem uses the champagne metal gradient', () => {
+test('emblem is the burgundy LW monogram', () => {
   const html = renderToStaticMarkup(<svg><Emblem size={200} /></svg>)
   expect(html).toContain('linearGradient')
-  expect(html.toUpperCase()).toContain(COLORS.champagneLight.toUpperCase())
+  expect(html.toUpperCase()).toContain(COLORS.LW.burgundy.toUpperCase())
+  expect(html).toContain('>LW<')
 })
 
 test('two emblems on one page do not share gradient ids', () => {
@@ -19,8 +20,8 @@ test('two emblems on one page do not share gradient ids', () => {
   expect(ids.length).toBeGreaterThanOrEqual(2)
 })
 
-test('wordmark spells CapitalCode and the tagline is optional', () => {
-  expect(renderToStaticMarkup(<Wordmark height={100} />)).toContain('CapitalCode')
-  expect(renderToStaticMarkup(<Wordmark height={100} />)).not.toContain('ENTREPRENEURSHIP')
-  expect(renderToStaticMarkup(<Wordmark height={100} tagline />)).toContain('ENTREPRENEURSHIP')
+test('wordmark spells Luminous Will and the tagline is optional', () => {
+  expect(renderToStaticMarkup(<Wordmark height={100} />)).toContain('Luminous Will')
+  expect(renderToStaticMarkup(<Wordmark height={100} />)).not.toContain('PSYCHOLOGY')
+  expect(renderToStaticMarkup(<Wordmark height={100} tagline />)).toContain('PSYCHOLOGY')
 })

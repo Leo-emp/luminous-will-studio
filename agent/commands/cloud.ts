@@ -26,9 +26,9 @@ register('cloud', 'cloud setup|status  — prepare AWS Lambda + GitHub Actions r
     log('art site ready')
     // # the runners get their own key that can only read/write the gh/ parts (docs/aws/runner-policy.json), never the main one
     const e = readEnv()
-    if (!e.CC_RUNNER_AWS_ACCESS_KEY_ID || !e.CC_RUNNER_AWS_SECRET_ACCESS_KEY) return refuse('CC_RUNNER_AWS_ACCESS_KEY_ID / CC_RUNNER_AWS_SECRET_ACCESS_KEY missing in .env.local — see docs/cloud-render.md (runner key)')
-    setSecret('CC_AWS_ACCESS_KEY_ID', e.CC_RUNNER_AWS_ACCESS_KEY_ID)
-    setSecret('CC_AWS_SECRET_ACCESS_KEY', e.CC_RUNNER_AWS_SECRET_ACCESS_KEY)
+    if (!e.LW_RUNNER_AWS_ACCESS_KEY_ID || !e.LW_RUNNER_AWS_SECRET_ACCESS_KEY) return refuse('LW_RUNNER_AWS_ACCESS_KEY_ID / LW_RUNNER_AWS_SECRET_ACCESS_KEY missing in .env.local — see docs/cloud-render.md (runner key)')
+    setSecret('LW_AWS_ACCESS_KEY_ID', e.LW_RUNNER_AWS_ACCESS_KEY_ID)
+    setSecret('LW_AWS_SECRET_ACCESS_KEY', e.LW_RUNNER_AWS_SECRET_ACCESS_KEY)
     log(`github secrets set on ${GH_REPO} (runner key: gh/ parts only)`)
     return result({ ok: true, region: aws.region, bucketName, functionName, site: serveUrl.split('/sites/')[1] ?? '' })
   }

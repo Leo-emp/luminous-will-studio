@@ -1,11 +1,12 @@
 // ============================================================
-// IMPORT ENGINE — one-off copy of CapitalCode's engine into LW
+// IMPORT ENGINE — one-off copy of the source engine (the owner's
+// finance-channel project) into LW
 // Studio. It ONLY READS the source: nothing is ever written,
 // moved or deleted there. Only paths on ALLOW are copied, and a
 // path matching any DENY rule is skipped even inside an allowed
 // folder (secrets, videos, databases, scratch folders).
 //
-// Usage: node scripts/import-engine.mjs <capitalcode folder> <lw studio folder>
+// Usage: node scripts/import-engine.mjs <source engine folder> <lw studio folder>
 // ============================================================
 import { cpSync, existsSync, mkdirSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'

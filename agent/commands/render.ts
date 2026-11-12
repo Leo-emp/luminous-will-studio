@@ -65,7 +65,7 @@ export const renderVideo = async (dir: string, tl: Timeline, voiceWav: string, o
   return { file: out, frames: tl.durationInFrames, seconds: Math.round(secs), chunks: chunks.length }
 }
 
-register('render', 'render <job> [--on=laptop|aws|github]  — pre-flight stills, chunked render (resumable), SFX mix, final.mp4 (CC_RENDER_ON sets the default)', async (a) => {
+register('render', 'render <job> [--on=laptop|aws|github]  — pre-flight stills, chunked render (resumable), SFX mix, final.mp4 (LW_RENDER_ON sets the default)', async (a) => {
   const dir = a.find((x) => !x.startsWith('--')) ?? refuse('give the job folder')
   if (!isDone(dir, 'gate_plan')) refuse('run gate-plan first')
   if (loadJob(dir).steps.gate_plan?.hash !== fileHash(join(dir, 'plan.json'))) refuse('plan.json changed since gate-plan — run gate-plan again')

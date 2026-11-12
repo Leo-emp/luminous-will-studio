@@ -10,8 +10,10 @@ import { PROPS } from '../art/props/registry'
 import { SCENES } from '../art/scenes/registry'
 import { VIGNETTES } from '../art/vignettes/registry'
 import { LAYOUTS, TONES } from './package'
-import { DECOR_FIGURES, SLIDE_KINDS } from './slides'
-export { DECOR_FIGURES }
+import { DECOR_FIGURES as ALL_DECOR, SLIDE_KINDS } from './slides'
+import { usable } from '../art/retired'
+// # finance-only decor scenes are hidden from LW plans (art/retired.ts)
+export const DECOR_FIGURES = ALL_DECOR.filter(usable)
 
 
 // # The data shape each slide kind expects (what SLIDE_SPECS checks) + how many cues it takes
@@ -30,12 +32,12 @@ const SLIDE_HINTS: Record<string, string> = {
 }
 
 export const catalog = (sfx: string[]) => ({
-  scenes: SCENES.map((s) => ({ id: s.id, title: s.title, tags: [...(s.tags ?? [])], anchors: Object.keys(s.anchors) })),
-  props: PROPS.map((p) => ({ id: p.id, tags: [...(p.tags ?? [])] })),
+  scenes: SCENES.filter((s) => usable(s.id)).map((s) => ({ id: s.id, title: s.title, tags: [...(s.tags ?? [])], anchors: Object.keys(s.anchors) })),
+  props: PROPS.filter((p) => usable(p.id)).map((p) => ({ id: p.id, tags: [...(p.tags ?? [])] })),
   poses: [...POSE_IDS] as string[],
   expressions: [...EXPRESSIONS] as string[],
   cast: [...CAST],
-  vignettes: VIGNETTES.map((v) => ({ id: v.id, title: v.title, tags: v.tags, data: v.hint })),
+  vignettes: VIGNETTES.filter((v) => usable(v.id)).map((v) => ({ id: v.id, title: v.title, tags: v.tags, data: v.hint })),
   slides: SLIDE_KINDS.map((k) => ({ kind: k, data: SLIDE_HINTS[k] ?? '(see agent/slides.ts)' })),
   sfx,
   thumbnail: { layouts: [...LAYOUTS], tones: [...TONES] },
@@ -43,7 +45,7 @@ export const catalog = (sfx: string[]) => ({
 export type Catalog = ReturnType<typeof catalog>
 
 export const catalogMarkdown = (c: Catalog) => [
-  '# CapitalCode catalog (generated — do not edit)',
+  '# Luminous Will catalog (generated — do not edit)',
   '',
   `**Cast (actor \`who\` / thumbnail \`look\`):** ${c.cast.map((x) => `\`${x}\``).join(', ')}`,
   `**Poses:** ${c.poses.map((x) => `\`${x}\``).join(', ')}`,

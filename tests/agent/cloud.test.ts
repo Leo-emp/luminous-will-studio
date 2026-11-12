@@ -5,8 +5,8 @@ import { framesPerLambda, GH_MAX_PARTS, GH_MIN_PART, ghParts, pickTarget, pool }
 describe('pickTarget', () => {
   test('flag beats env, env beats the laptop default', () => {
     expect(pickTarget([], {})).toBe('laptop')
-    expect(pickTarget([], { CC_RENDER_ON: 'aws' })).toBe('aws')
-    expect(pickTarget(['--on=github'], { CC_RENDER_ON: 'aws' })).toBe('github')
+    expect(pickTarget([], { LW_RENDER_ON: 'aws' })).toBe('aws')
+    expect(pickTarget(['--on=github'], { LW_RENDER_ON: 'aws' })).toBe('github')
   })
   test('an unknown target is refused', () => {
     expect(() => pickTarget(['--on=azure'], {})).toThrow(/one of/)

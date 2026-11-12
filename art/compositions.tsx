@@ -8,13 +8,10 @@ import { ThumbShort, type ShortThumbProps } from './thumbnails/ThumbShort'
 import { ThumbLong, type LongThumbProps } from './thumbnails/ThumbLong'
 import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { CoverStill } from './covers/CoverStill'
-import { Banner, BANNER } from './banner/Banner'
-import { BannerPick } from './banner/variants'
 import { getCover } from './covers/index'
 import { SIZE as COVER_SIZE } from './covers/kit'
 import { FPS, H, W } from './tokens'
 import { Episode, type EpisodeProps, type EpisodeTimeline } from './episode/Episode'
-import { DioramaHook, type HookProps } from './diorama/Hook'
 
 // # Placeholder until the engine passes a real timeline via --props
 const EMPTY_TIMELINE: EpisodeTimeline = { fps: FPS, durationInFrames: 90, shots: [{ shot: { id: 'logo', kind: 'brand', start: 0 }, from: 0, to: 90 }], sfx: [] }
@@ -48,9 +45,6 @@ export const ArtCompositions: React.FC = () => (
         const s = COVER_SIZE[getCover(props.id).canvas]
         return { width: s.w, height: s.h }
       }} />
-    {/* # YouTube channel banner 2560×1440 (guides: show the desktop strip + phone safe box) */}
-    <Composition id="Banner" component={Banner as React.FC<{ guides?: boolean }>} durationInFrames={1} fps={FPS} width={BANNER.w} height={BANNER.h} defaultProps={{ guides: false }} />
-    <Composition id="BannerPick" component={BannerPick as React.FC<{ variant: string; guides?: boolean }>} durationInFrames={1} fps={FPS} width={BANNER.w} height={BANNER.h} defaultProps={{ variant: 'bold', guides: false }} />
     <Composition id="LibraryDemo" component={LibraryDemo} durationInFrames={DEMO_FRAMES} fps={FPS} width={W} height={H} />
     <Composition id="CastHD" component={CastHD} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="ExpressionsHD" component={ExpressionsHD} durationInFrames={1} fps={FPS} width={W} height={H} />
@@ -61,7 +55,6 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="Episode" component={Episode} durationInFrames={90} fps={FPS} width={W} height={H}
       defaultProps={{ timeline: EMPTY_TIMELINE } as EpisodeProps}
       calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames, ...(props.timeline.canvas === 'tall' ? { width: 1080, height: 1920 } : { width: props.width ?? W, height: props.height ?? H }) })} />
-    <Composition id="DioramaHook" component={DioramaHook as React.FC<HookProps>} durationInFrames={1040} fps={FPS} width={W} height={H} defaultProps={{ cue: {} } as HookProps} />
     <Composition id="PoseSheet" component={PoseSheet as React.FC<{ page?: number }>} durationInFrames={1} fps={FPS} width={W} height={H} defaultProps={{ page: 0 }} />
     <Composition id="PoseStrip"component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>

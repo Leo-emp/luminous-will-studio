@@ -1,6 +1,6 @@
 // ============================================================
 // DIORAMA KIT — the pieces of the "continuous transforming
-// illustration" style (spec 2026-10-25-capitalcode-diorama-style):
+// illustration" style (spec 2026-10-25-lw-diorama-style):
 // a soft stage, objects that are built on the words and then act,
 // premium easing. Clean, polished, coherent: generous space, soft
 // gradients, soft shadows, gentle highlights, no harsh outlines.

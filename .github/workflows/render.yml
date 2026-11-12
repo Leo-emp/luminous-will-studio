@@ -1,4 +1,4 @@
-# CapitalCode cloud render: one video split across free runners (started by `render <job> --on=github`)
+# Luminous Will cloud render: one video split across free runners (started by `render <job> --on=github`)
 name: Render
 run-name: render ${{ inputs.job }}
 
@@ -38,8 +38,8 @@ jobs:
       - name: Render frames ${{ matrix.range[0] }}–${{ matrix.range[1] }}
         working-directory: .github/render
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.CC_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.CC_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.LW_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.LW_AWS_SECRET_ACCESS_KEY }}
           SERVE_URL: ${{ inputs.serve_url }}
           BUCKET: ${{ inputs.bucket }}
           REGION: ${{ inputs.region }}

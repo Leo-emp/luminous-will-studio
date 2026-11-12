@@ -6,7 +6,6 @@ import { mkdirSync, mkdtempSync, readdirSync, statSync, writeFileSync, existsSyn
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
-// @ts-expect-error plain .mjs script, no type declarations
 import { importEngine } from '../../scripts/import-engine.mjs'
 
 // # Make a file (and its folders) inside a temp tree

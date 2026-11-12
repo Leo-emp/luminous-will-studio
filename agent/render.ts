@@ -18,16 +18,18 @@ import { PUBLIC_DIR, ROOT } from './paths'
 import type { Timeline } from './timeline'
 
 export const TIMEOUT = 120_000
-export const PORT = Number(process.env.CC_PORT) || 3177 // # first port tried (3000 is often taken by a Next dev server); CC_PORT lets a second job (stills while a render runs) start elsewhere
+export const PORT = Number(process.env.LW_PORT) || 3177 // # first port tried (3000 is often taken by a Next dev server); LW_PORT lets a second job (stills while a render runs) start elsewhere
 
 // # First free local port from `start` up — a second render or a thumbnail job never clashes
+// # A port can hold on one interface; on Windows binding all interfaces still succeeds while 127.0.0.1 is taken.
+// # So a port counts as free only when BOTH all-interfaces and 127.0.0.1 can listen on it.
+const canListen = (p: number, host?: string) => new Promise<boolean>((res) => {
+  const srv = createServer().once('error', () => res(false)).once('listening', () => srv.close(() => res(true)))
+  if (host) srv.listen(p, host); else srv.listen(p)
+})
 export const freePort = async (start = PORT): Promise<number> => {
   for (let p = start; p < start + 200; p++) {
-    const ok = await new Promise<boolean>((res) => {
-      const srv = createServer().once("error", () => res(false)).once("listening", () => srv.close(() => res(true)))
-      srv.listen(p) // # all interfaces: a port held on :: by another job's server must count as taken (127.0.0.1-only checks missed it, 2026-11-09)
-    })
-    if (ok) return p
+    if ((await canListen(p)) && (await canListen(p, '127.0.0.1'))) return p
   }
   throw new Error(`no free port in ${start}–${start + 199}`)
 }
@@ -292,8 +294,8 @@ export const mux = (video: string, audio: string, out: string) =>
 
 // # Browser tabs for one chunk: half the cores at most, and only as many as free memory allows
 // # (≈ 0.7 GB per tab, 3 GB kept for the system — measured: 0.45/2 still got renders killed) — a render on a busy PC slows down instead of being killed
-// # CC_RENDER_WORKERS (optional) caps it further on a PC where renders keep getting stopped for low memory
+// # LW_RENDER_WORKERS (optional) caps it further on a PC where renders keep getting stopped for low memory
 export const renderConcurrency = (freeGB: number, cores: number) => {
-  const cap = Number(process.env.CC_RENDER_WORKERS) || Infinity
+  const cap = Number(process.env.LW_RENDER_WORKERS) || Infinity
   return Math.max(1, Math.min(cap, Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 3) / 0.7)))
 }

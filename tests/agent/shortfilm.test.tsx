@@ -1,4 +1,4 @@
-// # Shorts made from scratch (spec 2026-10-25-capitalcode-shorts): a tall 1080×1920 canvas, diorama pieces
+// # Shorts made from scratch (spec 2026-10-25-lw-shorts): a tall 1080×1920 canvas, diorama pieces
 // # drawn for a phone, word-by-word captions, 2–3 minutes
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'

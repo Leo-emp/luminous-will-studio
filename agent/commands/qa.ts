@@ -38,7 +38,7 @@ export const checkCritic = (c: CriticDoc): string[] => {
 
 const PACK = (dir: string, sheets: string[], flags: string[], stats: object, shots: string[] = []) => `# Critic pack — ${dir}
 
-You are the independent CapitalCode Critic. You did not write or plan this video.
+You are the independent Luminous Will Critic. You did not write or plan this video.
 Judge it as a demanding viewer and as YouTube's "inauthentic content" reviewer.
 
 Read: script.json (thesis + chapters), facts.json (sources), plan.json (visual plan).

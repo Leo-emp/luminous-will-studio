@@ -1,5 +1,5 @@
 // ============================================================
-// DESIGN TOKENS — the CapitalCode look in one place
+// DESIGN TOKENS — the Luminous Will look in one place
 // Champagne sampled from the owner's logo (2026-10-23).
 // ============================================================
 
@@ -30,6 +30,8 @@ export const COLORS = {
   text: '#E8EEF5',
   dim: '#7C8A9A',
   warm: '#FFD58A',          // # lamp / interior light
+  // # LUMINOUS WILL brand: burgundy signature, warm cream, deep ink (approved hero sheet 2026-11-13)
+  LW: { burgundy: '#7E1F35', cream: '#F7EDE2', ink: '#3A1622' },
 } as const
 
 export const FONTS = {

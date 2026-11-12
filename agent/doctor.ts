@@ -24,8 +24,8 @@ export const doctor = (d: Deps, opts: { cloud?: boolean } = {}) => {
   const checks: Check[] = []
   const add = (name: string, ok: boolean, fix: string) => checks.push(ok ? { name, ok } : { name, ok, fix })
 
-  add('azure key', !!d.env.AZURE_SPEECH_KEY, 'add AZURE_SPEECH_KEY to capitalcode/.env.local')
-  add('azure region', !!d.env.AZURE_SPEECH_REGION, 'add AZURE_SPEECH_REGION to capitalcode/.env.local')
+  add('azure key', !!d.env.AZURE_SPEECH_KEY, 'add AZURE_SPEECH_KEY to luminous-will-studio/.env.local')
+  add('azure region', !!d.env.AZURE_SPEECH_REGION, 'add AZURE_SPEECH_REGION to luminous-will-studio/.env.local')
   for (const t of ['ffmpeg', 'ffprobe']) add(t, d.tool(t), `install ${t} and put it on PATH (winget install Gyan.FFmpeg)`)
   const fonts = FONT_FILES.filter((f) => !d.has(join(PUBLIC_DIR, f.file))).map((f) => f.file)
   add('fonts', fonts.length === 0, `missing in public/: ${fonts.join(', ')}`)

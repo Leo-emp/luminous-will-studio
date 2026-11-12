@@ -1,5 +1,5 @@
 // ============================================================
-// GITHUB RUNNER — renders one frame range of a CapitalCode video
+// GITHUB RUNNER — renders one frame range of a Luminous Will video
 // from the art site on S3 (deployed by `cloud setup` / a cloud
 // render) and uploads the muted part back to S3. The laptop joins
 // the parts, checks every frame count and adds the audio.

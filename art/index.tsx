@@ -1,5 +1,5 @@
 // ============================================================
-// REMOTION ENTRY for the CapitalCode art library.
+// REMOTION ENTRY for the Luminous Will art library.
 // Render: npx remotion still art/index.tsx <Id> out.png --port=3177
 // ============================================================
 

@@ -2,7 +2,7 @@
 // CLOUD RENDER — one whole video renders on AWS Lambda or on
 // GitHub Actions instead of this laptop, so three videos (any
 // brand) can render at once: `render <job> --on=aws|github`, or
-// CC_RENDER_ON=aws|github for `run`. Both read the same art bundle
+// LW_RENDER_ON=aws|github for `run`. Both read the same art bundle
 // (a Remotion site on S3, one per art version) and give back a
 // muted video.mp4; the voice + SFX mix and mux stay local.
 // Keys live in .env.local (REMOTION_AWS_*) and are never printed.
@@ -20,7 +20,7 @@ export const TARGETS: Target[] = ['laptop', 'aws', 'github']
 
 // # Sydney: the only region this AWS account's plan allows (all others are blocked by an account-wide rule)
 export const DEFAULT_REGION = 'ap-southeast-2'
-export const GH_REPO = 'Leo-emp/CapitalCode'
+export const GH_REPO = 'Leo-emp/luminous-will-studio'
 export const GH_WORKFLOW = 'render.yml'
 export const LAMBDA = { memorySizeInMb: 2048, diskSizeInMb: 2048, timeoutInSeconds: 900 }
 // # GitHub runs at most this many parts of one video side by side (free runners, 4 cores each)
@@ -28,7 +28,7 @@ export const GH_MAX_PARTS = 10
 export const GH_MIN_PART = 1200 // # frames: smaller parts waste each runner's ~2 min start-up
 
 export const pickTarget = (args: string[], env: Record<string, string | undefined> = process.env): Target => {
-  const v = args.find((x) => x.startsWith('--on='))?.slice(5) ?? env.CC_RENDER_ON ?? 'laptop'
+  const v = args.find((x) => x.startsWith('--on='))?.slice(5) ?? env.LW_RENDER_ON ?? 'laptop'
   if (!TARGETS.includes(v as Target)) throw new Error(`--on must be one of ${TARGETS.join(', ')} (got "${v}")`)
   return v as Target
 }
@@ -41,7 +41,7 @@ export const loadAws = () => {
   process.env.REMOTION_AWS_ACCESS_KEY_ID = e.REMOTION_AWS_ACCESS_KEY_ID
   process.env.REMOTION_AWS_SECRET_ACCESS_KEY = e.REMOTION_AWS_SECRET_ACCESS_KEY
   // # the Lambda cap lives in .env.local too (until the AWS concurrency quota is raised); a shell value wins
-  if (e.CC_LAMBDA_MAX && !process.env.CC_LAMBDA_MAX) process.env.CC_LAMBDA_MAX = e.CC_LAMBDA_MAX
+  if (e.LW_LAMBDA_MAX && !process.env.LW_LAMBDA_MAX) process.env.LW_LAMBDA_MAX = e.LW_LAMBDA_MAX
   const region = (e.REMOTION_AWS_REGION || DEFAULT_REGION) as 'ap-southeast-2'
   return { region, keyId: e.REMOTION_AWS_ACCESS_KEY_ID, secret: e.REMOTION_AWS_SECRET_ACCESS_KEY }
 }
@@ -109,8 +109,8 @@ export const pool = async <T>(items: T[], n: number, fn: (x: T) => Promise<void>
   await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) await fn(items[i++]) }))
 }
 
-// # Lambdas per video: CC_LAMBDA_MAX caps it (new AWS accounts may run only 10 at once until the quota is raised)
-export const framesPerLambda = (frames: number, max = Number(process.env.CC_LAMBDA_MAX) || 150) => Math.max(20, Math.ceil(frames / Math.min(200, max)))
+// # Lambdas per video: LW_LAMBDA_MAX caps it (new AWS accounts may run only 10 at once until the quota is raised)
+export const framesPerLambda = (frames: number, max = Number(process.env.LW_LAMBDA_MAX) || 150) => Math.max(20, Math.ceil(frames / Math.min(200, max)))
 
 // # Pre-flight on Lambda: one still per shot, in parallel, before the paid video render
 export const stillsOnAws = async (props: { timeline: Timeline }, frames: number[], outDir: string) => {

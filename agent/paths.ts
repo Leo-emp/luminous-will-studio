@@ -1,6 +1,6 @@
 // ============================================================
-// PATHS — every folder the CapitalCode agent reads or writes.
-// Output lives in CapitalCode's own folder (owner rule: one
+// PATHS — every folder the Luminous Will agent reads or writes.
+// Output lives in Luminous Will's own folder (owner rule: one
 // dedicated output folder per agent).
 // ============================================================
 import { join } from 'node:path'

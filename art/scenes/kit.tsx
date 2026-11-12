@@ -331,7 +331,7 @@ export const BrandPoster: React.FC<{ x: number; y: number; s?: number }> = ({ x,
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <rect width={170} height={220} fill={w.shadow} stroke={COLORS.champagne} strokeWidth={3} />
       <Emblem size={110} x={30} y={40} />
-      <text x={85} y={196} textAnchor="middle" fill={COLORS.champagne} style={{ font: '700 18px Inter', letterSpacing: 3 }}>CAPITALCODE</text>
+      <text x={85} y={196} textAnchor="middle" fill={COLORS.champagne} style={{ font: '700 18px Inter', letterSpacing: 3 }}>LUMINOUS WILL</text>
     </g>
   )
 }

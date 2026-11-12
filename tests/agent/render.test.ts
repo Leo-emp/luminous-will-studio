@@ -153,13 +153,13 @@ test('render concurrency follows free memory and cores', () => {
   expect(renderConcurrency(32, 4)).toBe(2)        // # never more than half the cores
 })
 
-// # owner PC kept getting renders stopped on low memory: CC_RENDER_WORKERS caps the browser tabs
-test('CC_RENDER_WORKERS caps the workers (never above what memory allows)', () => {
-  process.env.CC_RENDER_WORKERS = '2'
+// # owner PC kept getting renders stopped on low memory: LW_RENDER_WORKERS caps the browser tabs
+test('LW_RENDER_WORKERS caps the workers (never above what memory allows)', () => {
+  process.env.LW_RENDER_WORKERS = '2'
   try {
     expect(renderConcurrency(9.0, 16)).toBe(2)
     expect(renderConcurrency(3.5, 16)).toBe(1)
-  } finally { delete process.env.CC_RENDER_WORKERS }
+  } finally { delete process.env.LW_RENDER_WORKERS }
   expect(renderConcurrency(9.0, 16)).toBe(8)
 })
 
@@ -169,8 +169,9 @@ test('the piece list block is left out of the shared art hash; pieces are cached
   const a = "import x from './x'\n// # pieces:begin\nimport { A } from './a'\n// # pieces:end\nrun()"
   const b = "import x from './x'\n// # pieces:begin\nimport { A } from './a'\nimport { B } from './b'\n// # pieces:end\nrun()"
   expect(stripPieceList(a)).toBe(stripPieceList(b))
+  // # LW starts with no pieces; library ids are still hashed per file (a scene in one file, a prop in another)
   const fpr = artFingerprint()
-  expect(fpr.idFile['w100-hook']).toBeDefined()
-  expect(fpr.idFile['g2k-hook']).toBeDefined()
-  expect(fpr.idFile['w100-hook']).not.toBe(fpr.idFile['g2k-hook'])
+  expect(fpr.idFile['house']).toBeDefined()
+  expect(fpr.idFile['mountain-summit']).toBeDefined()
+  expect(fpr.idFile['house']).not.toBe(fpr.idFile['mountain-summit'])
 })

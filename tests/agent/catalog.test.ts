@@ -4,9 +4,9 @@ import { catalog, catalogMarkdown } from '../../agent/catalog'
 
 test('catalog lists scenes with anchors and tags, props, poses, expressions, cast, slides, thumb options', () => {
   const c = catalog(['whoosh'])
-  expect(c.scenes.length).toBeGreaterThan(50)
+  expect(c.scenes.length).toBeGreaterThan(25) // # LW: finance scenes hidden (art/retired.ts)
   expect(c.scenes[0]).toEqual(expect.objectContaining({ id: expect.any(String), anchors: expect.any(Array), tags: expect.any(Array) }))
-  expect(c.props.length).toBeGreaterThan(50)
+  expect(c.props.length).toBeGreaterThan(40) // # LW: finance props hidden
   expect(c.poses).toContain('think')
   expect(c.expressions.length).toBeGreaterThan(5)
   expect(c.cast.length).toBeGreaterThan(1)
@@ -24,6 +24,6 @@ test('catalog markdown names every scene id once', () => {
 // # Living film: the director must find the new tools in the catalog
 test('catalog markdown lists the new vignettes and documents the living-film fields', () => {
   const md = catalogMarkdown(catalog([]))
-  for (const id of ['crowd', 'grid', 'circles', 'crowd-giant', 'slice-grows', 'tracks', 'house-of-cards', 'money-mountain', 'see-saw']) expect(md).toContain(`\`${id}\``)
+  for (const id of ['crowd', 'grid', 'circles', 'crowd-giant', 'slice-grows', 'tracks', 'house-of-cards', 'see-saw']) expect(md).toContain(`\`${id}\``)
   for (const field of ['camera', 'path', 'give', 'enter.zoomInto', 'world', 'text']) expect(md).toContain(`\`${field}\``)
 })

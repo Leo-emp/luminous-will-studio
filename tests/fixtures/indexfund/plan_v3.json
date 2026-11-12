@@ -665,7 +665,7 @@
       },
       "slide": "compare",
       "heading": "One slice vs the average slice",
-      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026); CapitalCode calculation",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026); Luminous Will calculation",
       "data": {
         "cards": [
           {
@@ -1144,7 +1144,7 @@
       },
       "slide": "number",
       "heading": "The premium on the giants",
-      "source": "CapitalCode calculation: 28 ÷ 19.5",
+      "source": "Luminous Will calculation: 28 ÷ 19.5",
       "data": {
         "value": 44,
         "label": "more paid per $1 of future profit",
@@ -2192,7 +2192,7 @@
       "slide": "compare",
       "heading": "Same index, different bet",
       "kicker": "Share held by the top 10",
-      "source": "ChartRow: S&P 500 and S&P 500 Equal Weight (2026); CapitalCode calculation",
+      "source": "ChartRow: S&P 500 and S&P 500 Equal Weight (2026); Luminous Will calculation",
       "data": {
         "cards": [
           {

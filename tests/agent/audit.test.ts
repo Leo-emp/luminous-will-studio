@@ -7,7 +7,7 @@ const script: ScriptDoc = { title: 't', area: 'personal-finance', format: 'expla
   chapters: [{ title: 'A', sentences: [{ id: 's1', text: 'The first month costs about 93 dollars.', facts: ['f_calc'] }, { id: 's2', text: 'That is most of the payment.' }] }] }
 const facts: FactsDoc = { facts: [
   { id: 'f_rate', value: 22.36, unit: '%', asOf: '2026-08', source: 'Federal Reserve G.19', url: 'https://x' },
-  { id: 'f_calc', value: 93.17, unit: 'USD', asOf: '2026-10', source: 'CapitalCode calculation: 5000 × 22.36% ÷ 12', url: '' },
+  { id: 'f_calc', value: 93.17, unit: 'USD', asOf: '2026-10', source: 'Luminous Will calculation: 5000 × 22.36% ÷ 12', url: '' },
 ] } as FactsDoc
 const good = (): AuditDoc => ({
   scriptHash: 'abc',
