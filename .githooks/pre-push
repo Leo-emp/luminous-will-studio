@@ -1,3 +1,4 @@
 #!/bin/sh
-# Public repo: block the push if anything looks like a secret
-node scripts/secret-scan.mjs || exit 1
+# Public repo: block the push if anything looks like a secret,
+# in the working tree OR in any commit being pushed (git passes the refs on stdin)
+node scripts/secret-scan.mjs --push || exit 1

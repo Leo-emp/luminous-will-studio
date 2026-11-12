@@ -11,11 +11,15 @@ import { fileURLToPath } from 'node:url'
 
 // # Key shapes worth blocking (one finding per line, first match wins)
 const PATTERNS = [
-  { kind: 'aws', re: /\bAKIA[0-9A-Z]{16}\b/ },
-  { kind: 'github', re: /\bgh[pousr]_[A-Za-z0-9]{36,}\b/ },
-  { kind: 'stripe', re: /\b(sk_live_|pk_live_|rk_live_|whsec_)[A-Za-z0-9]{24,}/ },
-  // # NAME_KEY / NAME_SECRET / NAME_TOKEN assigned a long literal value (= or :), quoted or not
-  { kind: 'assigned-secret', re: /\b[A-Z0-9_]*(KEY|SECRET|TOKEN|PASSWORD)\b\s*[:=]\s*['"]?[A-Za-z0-9+/_\-]{20,}/ },
+  { kind: 'private-key', re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
+  { kind: 'aws', re: /\b(AKIA|ASIA)[0-9A-Z]{16}\b/ },
+  { kind: 'github', re: /\b(gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,})/ },
+  { kind: 'stripe', re: /\b((sk|pk|rk)_(live|test)_|whsec_)[A-Za-z0-9]{24,}/ },
+  { kind: 'google', re: /\bAIza[0-9A-Za-z_-]{35}/ },
+  // # an Azure Speech key handed straight to the SDK
+  { kind: 'azure', re: /fromSubscription\(\s*['"][0-9a-f]{32}['"]/i },
+  // # any name ending in key/secret/token/password (any case, quoted JSON names too) given a long literal value
+  { kind: 'assigned-secret', re: /\b[A-Za-z0-9_]*(key|secret|token|password)["']?\s*[:=]\s*['"]?[A-Za-z0-9+/_-]{20,}/i },
 ]
 // # Any .env file except the empty template
 const DOTENV = /(^|\/)\.env(?!\.example$)/
@@ -48,9 +52,35 @@ export const scanRepo = (root) => {
   return out
 }
 
-// # CLI: exit 1 on any finding
+// # The commits a `git push` sends (git gives the hook "<local ref> <local sha> <remote ref> <remote sha>" lines
+// # on stdin). Every ADDED line of every pushed commit is scanned — so a key that was committed and later deleted,
+// # or edited away on disk, is still caught. Deleting a branch (local sha all zeros) sends nothing.
+const ZERO = /^0+$/
+export const scanPush = (root, stdin) => {
+  const out = []
+  for (const line of stdin.split(/\r?\n/).filter(Boolean)) {
+    const [, localSha, , remoteSha] = line.trim().split(/\s+/)
+    if (!localSha || ZERO.test(localSha)) continue
+    const range = !remoteSha || ZERO.test(remoteSha) ? [localSha, '--not', '--remotes'] : [`${remoteSha}..${localSha}`]
+    const log = execFileSync('git', ['log', '-p', '--no-color', '--unified=0', '--format=commit %h', ...range], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 })
+    let commit = '', file = ''
+    for (const l of log.split('\n')) {
+      if (l.startsWith('commit ')) { commit = l.slice(7); continue }
+      if (l.startsWith('+++ ')) {
+        file = l.slice(4).replace(/^b\//, '')
+        if (DOTENV.test(file)) out.push({ path: `${commit}:${file}`, line: 0, kind: 'dotenv' })
+        continue
+      }
+      if (l.startsWith('+')) for (const f of scanText(file, l.slice(1))) if (f.kind !== 'dotenv') out.push({ ...f, path: `${commit}:${file}`, line: 0 })
+    }
+  }
+  return out
+}
+
+// # CLI: exit 1 on any finding. --push = pre-push hook mode (also scans the pushed commits from stdin)
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const found = scanRepo(process.cwd())
+  const push = process.argv.includes('--push')
+  const found = [...scanRepo(process.cwd()), ...(push ? scanPush(process.cwd(), readFileSync(0, 'utf8')) : [])]
   for (const f of found) console.log(`${f.path}:${f.line} ${f.kind}`)
   console.log(found.length ? `secret scan: ${found.length} finding(s) — push blocked` : 'secret scan: clean')
   process.exit(found.length ? 1 : 0)
