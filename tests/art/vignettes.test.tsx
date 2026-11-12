@@ -90,7 +90,7 @@ test('grid takes 4–6 panels, circles 3–5', () => {
 test('the mini cast: small people in the cast looks, alive (they blink and breathe)', async () => {
   const { Mini } = await import('../../art/rig/Mini')
   const at = (f: number) => renderToStaticMarkup(<svg><Mini look="hero" x={500} y={800} scale={1} frame={f} seed={3} /></svg>)
-  expect(at(10)).toContain('#2B8FE0') // # hero blazer blue
+  expect(at(10)).toContain('#7E1F35') // # LW hero burgundy hoodie
   expect(new Set(Array.from({ length: 60 }, (_, f) => at(f))).size).toBeGreaterThan(5)
 })
 
@@ -98,7 +98,7 @@ test('the mini cast: small people in the cast looks, alive (they blink and breat
 test('metaphors exist and refuse bad data with a reason', () => {
   for (const id of ['crowd-giant', 'slice-grows', 'tracks', 'house-of-cards', 'money-mountain', 'see-saw']) expect(VIGNETTES.some((v) => v.id === id), id).toBe(true)
   expect(getVignette('crowd-giant').check({ giant: 'nobody', crowd: 10 })).toMatch(/nobody/)
-  expect(getVignette('crowd-giant').check({ giant: 'investor', crowd: 80 })).toMatch(/5–40/)
+  expect(getVignette('crowd-giant').check({ giant: 'hero-rich', crowd: 80 })).toMatch(/5–40/)
   expect(getVignette('slice-grows').check({ name: 'NVIDIA', from: 2, to: 140 })).toMatch(/0 and 100/)
   expect(getVignette('tracks').check({ long: { label: '30 years', years: 5 }, short: { label: '5 years', years: 30 } })).toMatch(/longer/)
   expect(getVignette('see-saw').check({ left: { label: 'A' }, right: { label: 'B', value: 1 } })).toMatch(/value/)

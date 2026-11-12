@@ -2125,7 +2125,7 @@
           ]
         },
         {
-          "who": "owner",
+          "who": "hero-fit",
           "anchor": "stand2",
           "track": [
             {
@@ -2282,7 +2282,7 @@
           ]
         },
         {
-          "who": "investor",
+          "who": "hero-rich",
           "anchor": "stand2",
           "track": [
             {

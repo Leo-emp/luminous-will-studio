@@ -1,34 +1,34 @@
 // ============================================================
 // ACTOR — the ONE way a character appears anywhere (scenes, demo,
-// thumbnails, the Phase-2 engine). Always the approved HD cast,
+// thumbnails, the engine). Always the approved LW cast,
 // always the same on-screen size for a given scene anchor scale,
 // so the hero looks identical in every scene and every video.
 // ============================================================
 
 import React from 'react'
 import { idleLife } from '../motion/life'
-import { CharacterHD, getLookHD, HD_SKELETON, LOOKS_HD } from './hd/CharacterHD'
+import { CharacterLW, getLookLW, LOOKS_LW, LW_SKELETON, skeletonFor } from './lw/CharacterLW'
 import { type ExpressionId, footDrop, getPose, handPosition, type Pose } from './pose'
 
-// # The approved cast (owner, 2026-10-24)
-export const CAST = Object.keys(LOOKS_HD) as ReadonlyArray<string>
+// # The approved LW cast (owner, 2026-11-13): one hero in four versions; more characters join via the library
+export const CAST = Object.keys(LOOKS_LW) as ReadonlyArray<string>
 
-// # Head top above the neck in HD drawing units (hair/hard-hat peak, head scaled 1.14)
+// # Head top above the neck in rig drawing units (hair/hard-hat peak, head scaled 1.14)
 const HEAD_TOP = 204
-// # Standing height of the HD figure in its own units, measured from the idle pose
-const STANDING = footDrop(getPose('idle'), HD_SKELETON) + HEAD_TOP
+// # Standing height of the LW figure in its own units, measured from the idle pose
+const STANDING = footDrop(getPose('idle'), LW_SKELETON) + HEAD_TOP
 // # On-screen height of a standing actor at anchor scale 1 (the size the owner approved)
 export const STANDING_PX = 560
 const BASE = STANDING_PX / STANDING
 
 // # On-screen height for a pose at an anchor scale (used for layout checks)
-export const actorHeight = (pose: string | Pose, scale = 1): number => {
+export const actorHeight = (pose: string | Pose, scale = 1, who = 'hero'): number => {
   const p = typeof pose === 'string' ? getPose(pose) : pose
-  return (footDrop(p, HD_SKELETON) + HEAD_TOP) * BASE * scale
+  return (footDrop(p, skeletonFor(getLookLW(who))) + HEAD_TOP) * BASE * scale
 }
 
 export const Actor: React.FC<{
-  who: string                      // # 'hero' | 'buyer' | 'investor' | 'owner' | 'worker'
+  who: string                      // # 'hero' | 'hero-struggling' | 'hero-fit' | 'hero-rich' (+ library characters)
   pose: string | Pose              // # pose id or a blended pose from poseAt()
   expression?: ExpressionId        // # override the pose's expression
   x: number; y: number             // # anchor point between the feet (scene pixels)
@@ -39,13 +39,13 @@ export const Actor: React.FC<{
   life?: number                    // # seed: blinks, breathes, glances and sways on its own (living film)
   blend?: { from: ExpressionId; mix: number } // # the face is still melting in from this feeling
 }> = ({ who, pose, expression, x, y, scale = 1, frame = 0, breathe = true, flip = false, life, blend }) => {
-  const look = getLookHD(who)
+  const look = getLookLW(who)
   const base = typeof pose === 'string' ? getPose(pose) : pose
   const p = expression ? { ...base, expression } : base
   const l = life === undefined ? undefined : idleLife(frame, life)
   return (
     <g data-actor={who} transform={`translate(${x + (l ? l.sway * scale : 0)} ${y}) scale(${(flip ? -1 : 1) * BASE * scale} ${BASE * scale})`}>
-      <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} life={l} blend={blend} />
+      <CharacterLW pose={p} look={look} frame={frame} breathe={breathe} life={l} blend={blend} />
     </g>
   )
 }
@@ -56,7 +56,7 @@ type At = { x: number; y: number; scale: number }
 // # Where an actor's right hand is in scene pixels, for a pose at an anchor (mirrored when flipped)
 export const heldPoint = (pose: string | Pose, anchor: At, flip = false): { x: number; y: number } => {
   const p = typeof pose === 'string' ? getPose(pose) : pose
-  const h = handPosition(p, 'r', HD_SKELETON)
+  const h = handPosition(p, 'r', LW_SKELETON)
   const k = BASE * anchor.scale
   return { x: anchor.x + (flip ? -1 : 1) * h.x * k, y: anchor.y + h.y * k }
 }

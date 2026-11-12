@@ -138,7 +138,7 @@ const SeeSaw: React.FC<VignetteProps> = ({ frame, data, cues }) => {
   const tilt = interpolate(L - R, [-Math.max(1, data.right.value), Math.max(1, data.left.value)], [-14, 14], clamp)
   const side = (s: -1 | 1, d: { label: string; value: number }, w: number) => (
     <g transform={`translate(${960 + s * 560} 640)`} opacity={w}>
-      <Mini look={s < 0 ? 'hero' : 'investor'} x={s * 60} y={22} scale={1.7} frame={frame} seed={s + 5} mood={(s < 0 ? L >= R : R >= L) ? 'neutral' : 'happy'} />
+      <Mini look={s < 0 ? 'hero' : 'hero-rich'} x={s * 60} y={22} scale={1.7} frame={frame} seed={s + 5} mood={(s < 0 ? L >= R : R >= L) ? 'neutral' : 'happy'} />
       {/* # the weight: a coin stack as tall as the value */}
       {(() => { const hh = 40 + 160 * Math.min(1, d.value / Math.max(data.left.value, data.right.value)); return <g><rect x={s * -150 - 50} y={-14 - hh} width={100} height={hh} fill={GOLD_D} /><ellipse cx={s * -150} cy={-14 - hh} rx={50} ry={16} fill={GOLD} /></g> })()}
     </g>

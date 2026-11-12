@@ -43,10 +43,10 @@ export const LIVING_PAGES: LivingPage[] = [
   { name: 'page_17_Walk', cols: 3, frames: [10, 30, 40, 55, 70, 120], shots: one({ id: 'wk', kind: 'scene', scene: 'shop-street', actors: [hero(undefined, { path: [{ at: 20, to: 'stand2' }] })] }) },
   // # talk gestures while the voice speaks (automatic), two people out of sync
   { name: 'page_18_Gestures', cols: 3, frames: [20, 60, 100, 140, 180, 220], speech: [[10, 300]], shots: one({ id: 'gs', kind: 'scene', scene: 'shop-street',
-    actors: [hero(), { who: 'investor', anchor: 'stand2', track: [{ at: 0, pose: 'idle' }] }] }, 300) },
+    actors: [hero(), { who: 'hero-rich', anchor: 'stand2', track: [{ at: 0, pose: 'idle' }] }] }, 300) },
   // # handing an object over
   { name: 'page_19_HandOver', cols: 3, frames: [20, 36, 42, 45, 48, 70], shots: one({ id: 'ho', kind: 'scene', scene: 'shop-street',
-    actors: [hero([{ at: 0, pose: 'hold' }]), { who: 'investor', anchor: 'stand2', track: [{ at: 0, pose: 'idle' }] }],
+    actors: [hero([{ at: 0, pose: 'hold' }]), { who: 'hero-rich', anchor: 'stand2', track: [{ at: 0, pose: 'idle' }] }],
     props: [{ id: 'cash-stack', anchor: 'stand', at: 0, on: 'hand', actor: 0, give: { at: 40, to: 1 } }] }) },
   // # feelings melting into each other
   { name: 'page_20_Expressions', cols: 3, frames: [30, 62, 66, 120, 124, 160], shots: one({ id: 'ex', kind: 'scene', scene: 'shop-street', camera: [{ at: 1, to: 'stand', zoom: 1.9 }],
@@ -61,7 +61,7 @@ export const LIVING_PAGES: LivingPage[] = [
   ] },
   // # metaphors at the end of their build
   { name: 'page_23_Metaphors', cols: 3, frames: [140, 290, 440, 590, 740, 890], shots: [
-    ['crowd-giant', { giant: 'investor', crowd: 30, label: 'The top 10' }, 3],
+    ['crowd-giant', { giant: 'hero-rich', crowd: 30, label: 'The top 10' }, 3],
     ['slice-grows', { name: 'NVIDIA', from: 1.5, to: 7.5 }, 2],
     ['tracks', { long: { label: '30 years', years: 30 }, short: { label: '5 years', years: 5 } }, 3],
     ['house-of-cards', { label: 'Built on 10 names' }, 2],
@@ -70,7 +70,7 @@ export const LIVING_PAGES: LivingPage[] = [
   ].map(([v, data, n], i) => ({ from: i * 150, to: i * 150 + 150, shot: { id: `m${i}`, kind: 'vignette', start: i * 150, vignette: v, data, at: Array.from({ length: n as number }, (_, k) => i * 150 + 5 + k * 25) } })) },
   // # crowds, grids, circles
   { name: 'page_24_Crowds', cols: 3, frames: [90, 190, 290], shots: [
-    { from: 0, to: 100, shot: { id: 'c1', kind: 'vignette', start: 0, vignette: 'crowd', data: { people: Array.from({ length: 40 }, (_, i) => ({ look: ['hero', 'buyer', 'owner', 'worker', 'investor'][i % 5], share: i < 3 ? 20 : 1 + (i % 4) })) }, at: [5, 13, 21, 29, 37, 45] } },
+    { from: 0, to: 100, shot: { id: 'c1', kind: 'vignette', start: 0, vignette: 'crowd', data: { people: Array.from({ length: 40 }, (_, i) => ({ look: ['hero', 'hero-struggling', 'hero-fit', 'hero', 'hero-rich'][i % 5], share: i < 3 ? 20 : 1 + (i % 4) })) }, at: [5, 13, 21, 29, 37, 45] } },
     { from: 100, to: 200, shot: { id: 'c2', kind: 'vignette', start: 100, vignette: 'grid', data: { panels: [{ scene: 'shop-street', label: 'Shops' }, { scene: 'bank-interior', label: 'Banks' }, { prop: 'house', label: 'Homes' }, { prop: 'car', label: 'Cars' }] }, at: [105, 113, 121, 129] } },
     { from: 200, to: 300, shot: { id: 'c3', kind: 'vignette', start: 200, vignette: 'circles', data: { items: [{ prop: 'coin', label: 'Cash' }, { prop: 'house', label: 'Property' }, { scene: 'stock-exchange', label: 'Stocks' }] }, at: [205, 213, 221] } },
   ] },

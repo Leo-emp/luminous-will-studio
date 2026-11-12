@@ -94,11 +94,12 @@ test('in scenes with a foreground pavement, people stand on the front layer', as
 test('face blends between two expressions (never a snap)', async () => {
   const React = (await import('react')).default
   const { renderToStaticMarkup } = await import('react-dom/server')
-  const { FaceHD } = await import('../../art/rig/hd/CharacterHD')
-  const at = (mix: number) => renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceHD, { expression: 'worried', to: 'smiling', mix })))
+  const { FaceLW, LOOKS_LW } = await import('../../art/rig/lw/CharacterLW')
+  const look = LOOKS_LW.hero
+  const at = (mix: number) => renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceLW, { expression: 'worried', to: 'smiling', mix, look })))
   expect(at(0.5)).not.toBe(at(0))
   expect(at(0.5)).not.toBe(at(1))
-  expect(at(0)).toBe(renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceHD, { expression: 'worried' }))))
+  expect(at(0)).toBe(renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceLW, { expression: 'worried', look }))))
 })
 
 test('expressionAt eases from the previous feeling over 8 frames', async () => {
