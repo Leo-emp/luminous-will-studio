@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env
+.env.local
+*.db
+drizzle/meta/
+
+.vercel
+.env*
+output/
+
+.superpowers/
+
+# render jobs (videos live on R2) and TypeScript cache
+temp/
+tsconfig.tsbuildinfo

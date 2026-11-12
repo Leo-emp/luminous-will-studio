@@ -1,0 +1,344 @@
+// ============================================================
+// EPISODE — renders a whole video from timeline.json (made by the
+// engine's gate-plan). Every cue is already a frame number, so this
+// file only draws: scene shots (scene + HD cast + props + slams),
+// infographic slides, chapter cards and the logo, joined by short
+// zoom-through transitions, grain on top. Video only — the voice
+// and SFX are mixed once by ffmpeg (agent/render.ts).
+// ============================================================
+
+import React from 'react'
+import { AbsoluteFill, Audio, Easing, interpolate, staticFile, useCurrentFrame } from 'remotion'
+import { GrainOverlay } from '../GrainOverlay'
+import { ChapterCard, CompareCards, FlowDiagram, KeywordSlam, MapHighlight, QuoteCard, Timeline as TimelineCard } from '../infographics/cards'
+import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
+import { formatMoney, pctFormat } from '../infographics/layout'
+import { clamp, SlideFrame } from '../infographics/SlideFrame'
+import { Emblem } from '../logo/Emblem'
+import { Lockup } from '../logo/LogoReveal'
+import { expressionAt, GIVE_FRAMES, heldBy } from '../motion/acting'
+import { actedPose } from '../motion/life'
+import { walkAt, walkPose } from '../motion/walk'
+import { type Cam, cameraAt, camKeys, DEPTH, framed, layerCam } from '../motion/camera'
+import { ZOOM_INTO, zoomIntoAt } from '../motion/transition'
+import { KineticText } from '../motion/kinetic'
+import { cameraFor, OVERSCAN } from '../scenes/kit'
+import { type CueMap, reader } from '../diorama/cues'
+import { type Canvas, CANVAS, getPiece } from '../diorama/registry'
+import type { CaptionChunk } from '../../agent/captions'
+import { Captions } from './Captions'
+import { type Mood, themeStyle, ZigZagWipe } from '../diorama/kit'
+import '../diorama/pieces'
+import { getProp } from '../props/registry'
+import { Actor, holdsInHand, propBox } from '../rig/Actor'
+import { mixPose, type Pose, type PoseId, POSES } from '../rig/pose'
+import { getScene } from '../scenes/registry'
+import { getVignette } from '../vignettes/registry'
+import { COLORS, FPS, fontFaces } from '../tokens'
+
+// # Same shapes as agent/timeline.ts, with every cue already a frame number
+type Tone = 'blue' | 'green' | 'red' | 'champagne' | 'text'
+type RActor = { who: string; anchor: string; track: { at: number; pose: string; expression?: string }[]; flip?: boolean; path?: { at: number; to: string }[] }
+// # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
+type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number; give?: { at: number; to: number } }
+type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
+  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; camera?: { at: number; to: string | { x: number; y: number }; zoom?: number }[]; text?: { words: string; at: number; style: 'pop' | 'type' | 'stamp' | 'count'; anchor?: string }[]; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
+type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
+type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
+type RBrand = { id: string; kind: 'brand'; start: number }
+type RPiece = { id: string; kind: 'piece'; start: number; piece: string; mood?: Mood }
+export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand | RPiece) & { enter?: { zoomInto: string | { x: number; y: number } } }
+// # canvas: 'tall' = a 1080×1920 Short (pieces drawn for a phone, word-by-word captions); default wide 1920×1080
+export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap
+  canvas?: Canvas; captions?: CaptionChunk[] }
+export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
+
+export const TRANSITION = 8 // # frames of zoom-through between shots
+
+// ---------------------------------------------------------------- number formats a slide can ask for
+const FORMATS: Record<string, (v: number) => string> = {
+  money: (v) => formatMoney(v, { compact: true }),
+  moneyFull: (v) => formatMoney(v),
+  pct: (v) => `${Math.round(v * 10) / 10}%`,
+  int: (v) => Math.round(v).toLocaleString('en-US'),
+  x: (v) => `${Math.round(v * 10) / 10}×`,
+  plain: (v) => `${Math.round(v * 100) / 100}`,
+  cents: (v) => `${Math.round(v * 10) / 10}¢`,
+}
+const fmt = (name?: string) => FORMATS[name ?? ''] ?? FORMATS.plain
+
+// ---------------------------------------------------------------- scene shot
+// # A slam darkens the scene, lays a near-solid band behind the words and hides the props,
+// # so no sign, prop or screen text reads through the slam (Critic, first long video)
+export const slamLayers = (f: number, slamAt: number | undefined) => {
+  if (slamAt === undefined || f < slamAt - 3) return { dim: 0, band: 0, props: true }
+  const k = interpolate(f, [slamAt - 3, slamAt + 3], [0, 1], clamp)
+  return { dim: 0.86 * k, band: 0.96 * k, props: false }
+}
+// # The camera of a scene shot (living film): the opening framing, then glides to what the plan names on
+// # its cue words; with no moves planned it follows a walker; it always drifts a little
+export const sceneCamera = (s: RScene, f: number, from: number, walker?: { x: number; y: number; scale: number }): Cam => {
+  const a = getScene(s.scene).anchors
+  const fc = cameraFor(s.framing ?? 'wide', a.focus ?? a.prop1 ?? { x: 960, y: 540 })
+  const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
+  const seed = [...s.id].reduce((n, c) => n + c.charCodeAt(0), 0)
+  // # people the camera composes around (walkers are followed instead)
+  const people = (s.actors ?? []).filter((x) => !x.path?.length && a[x.anchor]).map((x) => a[x.anchor])
+  return s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a, people), seed)
+    : walker ? cameraAt(f, [{ at: from, x: walker.x, y: walker.y - 300 * walker.scale, zoom: Math.max(base.zoom, 1.2) }], seed)
+    : cameraAt(f, [{ at: from, ...base }], seed)
+}
+
+// # Where on screen the next shot grows out of: a point as given, or a spot of the previous scene seen
+// # through that shot's camera at the moment of the cut
+export const enterPoint = (prev: { shot: RShot; from: number }, z: string | { x: number; y: number }, at: number): { x: number; y: number } => {
+  if (typeof z !== 'string') return z
+  if (prev.shot.kind !== 'scene') return { x: 960, y: 540 }
+  const anc = getScene(prev.shot.scene).anchors[z]
+  if (!anc) return { x: 960, y: 540 }
+  const cam = sceneCamera(prev.shot, at, prev.from)
+  const v = framed(layerCam({ ...cam, zoom: cam.zoom * OVERSCAN }, DEPTH[anc.layer]))
+  return { x: anc.x * v.k + v.tx, y: anc.y * v.k + v.ty }
+}
+
+const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; speech?: [number, number][] }> = ({ s, f, from, to, speech = [] }) => {
+  const Scene = getScene(s.scene)
+  const a = Scene.anchors
+  const t = interpolate(f, [from, to], [0, 1], clamp)
+  const slots: Record<'back' | 'mid' | 'front', React.ReactNode[]> = { back: [], mid: [], front: [] }
+
+  const actorAt: { pose: Pose; anchor: typeof a[string]; flip: boolean }[] = []
+  const walkers: (typeof a[string])[] = []
+  for (const [i, act] of (s.actors ?? []).entries()) {
+    const home = a[act.anchor]
+    // # walking (living film): position along the path; the walk cycle replaces the keyed pose while moving
+    const legs = (act.path ?? []).filter((l) => a[l.to]).map((l) => ({ at: l.at, to: a[l.to] }))
+    const walk = legs.length ? walkAt(f, home, legs) : null
+    const anc = walk ? { ...home, x: walk.x, y: walk.y } : home
+    const moved = !!walk && legs.some((l) => f >= l.at)
+    // # the second spot faces the first (two-person moments) unless the plan says otherwise; a walker faces its way
+    const flip = moved ? walk!.facing < 0 : act.flip ?? (act.anchor === 'stand2' && a.stand ? anc.x > a.stand.x : false)
+    const keys = [...act.track].sort((x, y) => x.at - y.at)
+    // # each actor gets its own seed so two people never blink or gesture in sync
+    const seed = i * 7 + act.who.length * 3 + 1
+    let pose = walk?.walking ? walkPose(f) : actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
+    // # hand-over: giver and receiver both reach out (hold) around the moment the object changes hands
+    for (const p of s.props ?? []) {
+      if (!p.give || (i !== (p.actor ?? 0) && i !== p.give.to)) continue
+      const g = p.give.at, reach = interpolate(f, [g - 10, g - 2, g + GIVE_FRAMES + 6, g + GIVE_FRAMES + 14], [0, 1, 1, 0], clamp)
+      if (reach > 0) pose = mixPose(pose, POSES.hold, reach)
+    }
+    // # feelings melt into each other over a few frames instead of snapping
+    const ex = expressionAt(f, keys)
+    actorAt.push({ pose, anchor: anc, flip })
+    if (walk) walkers.push(anc)
+    // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start
+    const enterAt = keys[0].at > from + 2 ? keys[0].at : -999
+    const enter = interpolate(f, [enterAt - 4, enterAt + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
+    slots[anc.layer].push(
+      <g key={`a${i}`} opacity={enter} transform={`translate(${(1 - enter) * (flip ? 60 : -60)} 0)`}>
+        <Actor who={act.who} pose={pose} expression={ex.expression} blend={ex.from ? { from: ex.from, mix: ex.mix! } : undefined} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} life={seed} />
+      </g>,
+    )
+  }
+  const slamAt = s.slam?.at[0]
+  const layers = slamLayers(f, slamAt)
+  const perAnchor: Record<string, number> = {}
+  for (const [i, p] of (s.props ?? []).entries()) {
+    const anc = a[p.anchor]
+    const Prop = getProp(p.id).Component
+    const size = (p.size ?? 170) * anc.scale
+    if (f < p.at - 1 || !layers.props) continue
+    // # who holds it now (a hand-over moves it from the giver's hand to the receiver's)
+    const hb = p.on === 'hand' ? heldBy(f, p) : undefined
+    const holder = hb ? actorAt[hb.actor] : undefined
+    const passing = !!hb && hb.travel > 0 && hb.travel < 1
+    if (holder && !passing && !holdsInHand(holder.pose)) continue // # hand busy (chin, pointing, pocket): put the prop away
+    const boxOf = (h: (typeof actorAt)[number]) => propBox('hand', size, anc, { pose: h.pose, flip: h.flip, actor: h.anchor })
+    let box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor), ground: a.stand?.y })
+    if (passing && p.give && actorAt[p.actor ?? 0] && actorAt[p.give.to]) {
+      const b0 = boxOf(actorAt[p.actor ?? 0]), b1 = boxOf(actorAt[p.give.to]), t = hb!.travel
+      // # a small arc while it travels, like it is being passed over
+      box = { x: b0.x + (b1.x - b0.x) * t, y: b0.y + (b1.y - b0.y) * t - Math.sin(Math.PI * t) * 30, size: b0.size }
+    }
+    // # several props on one anchor fan out (not for held props)
+    const k = p.on === 'hand' ? 0 : (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
+    // # floor props share the standing ground, so they share its layer (in front of a foreground pavement)
+    const layer = holder ? holder.anchor.layer : p.on === 'floor' ? (a.stand?.layer ?? anc.layer) : anc.layer
+    slots[layer].push(<Prop key={`p${i}`} size={box.size} x={box.x + k * size * 0.72} y={box.y - k * 8} frame={f} enter={p.at} />)
+  }
+
+  // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
+  const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
+  const camera = sceneCamera(s, f, from, walkers[0])
+  // # kinetic text: at a spot it lives in the scene (the camera carries it) — above a person's head or above
+  // # a thing; with no spot it sits top-centre on screen
+  const free: React.ReactNode[] = []
+  for (const [i, k] of (s.text ?? []).entries()) {
+    const anc = k.anchor ? a[k.anchor] : undefined
+    if (!anc) { free.push(<KineticText key={'k' + i} words={k.words} style={k.style} frame={f} at={k.at} x={960} y={190} size={84} />); continue }
+    const y = /^(stand|sit)/.test(k.anchor!) ? anc.y - 620 * anc.scale : anc.y - 130 * anc.scale
+    slots[anc.layer].push(<KineticText key={'k' + i} words={k.words} style={k.style} frame={f} at={k.at} x={anc.x} y={Math.max(90, y)} size={72} />)
+  }
+  return (
+    <AbsoluteFill>
+      <AbsoluteFill style={{ transform: `scale(${push})` }}>
+        <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant} world={s.world} camera={camera}
+          actors={{ back: slots.back.length ? slots.back : undefined, mid: slots.mid.length ? slots.mid : undefined, front: slots.front.length ? slots.front : undefined }} />
+      </AbsoluteFill>
+      {free.length > 0 && <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>{free}</svg>}
+      {s.slam && slamAt !== undefined && f >= slamAt - 3 && (
+        <>
+          <AbsoluteFill style={{ background: '#000', opacity: layers.dim }} />
+          <AbsoluteFill style={{ justifyContent: 'center' }}>
+            <div style={{ height: 380, background: 'linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', opacity: layers.band }} />
+          </AbsoluteFill>
+          <KeywordSlam frame={f} words={s.slam.words} cues={s.slam.at} />
+        </>
+      )}
+    </AbsoluteFill>
+  )
+}
+
+// ---------------------------------------------------------------- infographic slide
+const SlideBody: React.FC<{ s: RSlide; f: number }> = ({ s, f }) => {
+  const d = s.data, at = s.at
+  switch (s.slide) {
+    case 'number': return <NumberBuild frame={f} value={d.value} cues={[at[0], Math.max(at[1], at[0] + 20)]} label={d.label} tone={d.tone} format={fmt(d.format ?? 'money')} />
+    case 'equation': return <Equation frame={f} parts={d.parts} cues={at} />
+    case 'bars': return <BarChart frame={f} bars={d.bars} cues={at} max={d.max} format={d.format === 'pct' ? pctFormat(d.bars.map((b: { value: number }) => b.value)) : fmt(d.format)} />
+    case 'line': return <LineChart frame={f} values={d.values} cues={[at[0], Math.max(at[1], at[0] + 30)]} area={d.area} tone={d.tone}
+      annotate={d.annotate ? { ...d.annotate, cue: at[2] } : undefined} yFormat={fmt(d.format)} xLabels={d.xLabels} />
+    case 'stacked': return <StackedBar frame={f} segments={d.segments} cues={at} format={d.format === 'pct' ? pctFormat(d.segments.map((x: { value: number }) => x.value)) : fmt(d.format)} />
+    case 'flow': return <FlowDiagram frame={f} nodes={d.nodes} cues={at} />
+    case 'timeline': return <TimelineCard frame={f} points={d.points} cues={at} />
+    case 'compare': return <CompareCards frame={f} cards={d.cards} cues={at} />
+    case 'map': return <MapHighlight frame={f} pins={d.pins} cues={at} />
+    case 'quote': return <QuoteCard frame={f} quote={d.quote} who={d.who} cue={at[0]} />
+    case 'slam': return <KeywordSlam frame={f} words={d.words} cues={at} />
+    default: return null
+  }
+}
+const SlideShotView: React.FC<{ s: RSlide; f: number; from: number }> = ({ s, f, from }) => {
+  const Icon = s.data?.icon ? getProp(s.data.icon).Component : null
+  return (
+    <SlideFrame frame={f} heading={s.heading} kicker={s.kicker} source={s.source} headCue={from + 2}>
+      {Icon && <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}><Icon size={150} x={1650} y={70} frame={f} enter={from + 6} /></svg>}
+      <SlideBody s={s} f={f} />
+    </SlideFrame>
+  )
+}
+
+// ---------------------------------------------------------------- vignette (animated mini-scene)
+type RVignette = { id: string; kind: 'vignette'; start: number; vignette: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
+const VignetteShotView: React.FC<{ s: RVignette; f: number; from: number }> = ({ s, f, from }) => {
+  const V = getVignette(s.vignette).Component
+  return (
+    <SlideFrame frame={f} heading={s.heading} kicker={s.kicker} source={s.source} headCue={from + 2}>
+      <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}><V frame={f} data={s.data} cues={s.at} /></svg>
+    </SlideFrame>
+  )
+}
+
+// ---------------------------------------------------------------- one shot, with its transition in/out
+// # enterAt / exitAt: zoom-into points when this shot grows out of the previous one / the next one grows out of it
+const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech?: [number, number][]; enterAt?: { x: number; y: number }; exitAt?: { x: number; y: number } }> = ({ s, f, from, to, speech, enterAt, exitAt }) => {
+  const inP = interpolate(f, [from, from + TRANSITION], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
+  const outP = interpolate(f, [to, to + TRANSITION], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) })
+  const scale = (1.06 - 0.06 * inP) * (1 + 0.08 * outP)
+  const body =
+    s.kind === 'scene' ? <SceneShotView s={s} f={f} from={from} to={to} speech={speech} />
+    : s.kind === 'slide' ? <SlideShotView s={s} f={f} from={from} />
+    : s.kind === 'vignette' ? <VignetteShotView s={s} f={f} from={from} />
+    : s.kind === 'chapter' ? <ChapterCard frame={f} n={s.n} title={s.title} cue={from} />
+    : s.kind === 'piece' ? null
+    : <Lockup f={f - from} />
+  // # zoom-into: fly into the point (outgoing) / grow out of it as a widening circle (incoming)
+  if (enterAt && f < from + ZOOM_INTO) {
+    const z = zoomIntoAt((f - from) / ZOOM_INTO, enterAt).incoming
+    return (
+      <AbsoluteFill style={{ clipPath: `circle(${z.r}px at ${z.cx}px ${z.cy}px)` }}>
+        <AbsoluteFill style={{ transformOrigin: '0 0', transform: `translate(${z.tx}px, ${z.ty}px) scale(${z.k})` }}>{body}</AbsoluteFill>
+      </AbsoluteFill>
+    )
+  }
+  if (exitAt && f >= to) {
+    const z = zoomIntoAt((f - to) / ZOOM_INTO, exitAt).outgoing
+    return <AbsoluteFill style={{ transformOrigin: '0 0', transform: `translate(${z.tx}px, ${z.ty}px) scale(${z.k})` }}>{body}</AbsoluteFill>
+  }
+  return <AbsoluteFill style={{ opacity: from === 0 || enterAt ? 1 : inP, transform: `scale(${from === 0 || enterAt ? 1 + 0.08 * outP : scale})` }}>{body}</AbsoluteFill>
+}
+
+// # A diorama piece: its own stage and choreography in one 1920×1080 SVG, reading cue words by name
+export const WIPE = 12
+const PieceView: React.FC<{ s: RPiece; f: number; from: number; to: number; cues: CueMap; canvas: Canvas }> = ({ s, f, from, to, cues, canvas }) => {
+  const piece = getPiece(s.piece), P = piece.Component, { w, h } = CANVAS[canvas]
+  return (
+    <AbsoluteFill>
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute', inset: 0 }}>
+        {/* # the mood (light cream / dark navy) sets the stage and ink colours of everything inside */}
+        <g style={themeStyle(s.mood ?? piece.mood ?? 'dark')}>
+          <P f={f} c={reader(cues, `piece ${s.piece}`)} from={from} to={to} />
+        </g>
+      </svg>
+    </AbsoluteFill>
+  )
+}
+
+// # Shots visible at frame f: the current one, plus the previous one while it zooms out under the new one
+// # (for TRANSITION frames, or ZOOM_INTO frames when the next shot grows out of it)
+export const visibleShots = (tl: EpisodeTimeline, f: number) =>
+  tl.shots.filter((x, i) => f >= x.from && f < x.to + (tl.shots[i + 1]?.shot.enter ? ZOOM_INTO : TRANSITION))
+
+// # Small brand emblem top-left on every shot except the brand card (channel identity, like Alux)
+export const cornerLogo = (kind: string) => kind !== 'brand'
+
+// # The picture of a timeline at frame f — every visible shot with its transitions (Episode and Short share it)
+export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = ({ timeline, f }) => {
+  const sh = timeline.shots
+  const pointOf = (i: number) => {
+    const z = sh[i]?.shot.enter?.zoomInto
+    return z !== undefined && i > 0 ? enterPoint(sh[i - 1], z, sh[i].from) : undefined
+  }
+  const cues = timeline.cues ?? {}, canvas = timeline.canvas ?? 'wide', { w, h } = CANVAS[canvas]
+  // # a piece that follows another piece comes in behind a zig-zag paper wipe (the reference's drawn transition):
+  // # the paper covers the old picture in the last WIPE frames, the cut happens under it, then it uncovers the new one
+  const wipeOf = (i: number) => (i > 0 && sh[i].shot.kind === 'piece' && sh[i - 1].shot.kind === 'piece' ? sh[i].from : undefined)
+  const wipes = sh.map((_, i) => wipeOf(i)).filter((x): x is number => x !== undefined && f >= x - WIPE && f < x + WIPE + 4)
+  return <>
+    {visibleShots(timeline, f).map((x) => {
+      const i = sh.indexOf(x)
+      if (x.shot.kind === 'piece') {
+        // # pieces hand over at the cut itself (the wipe hides it): no zoom-through, no overlap
+        if (f >= x.to) return null
+        return <PieceView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} cues={cues} canvas={canvas} />
+      }
+      return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
+    })}
+    {/* # captions sit under the paper wipe, so each caption leaves and arrives with its own scene (owner rule r26) */}
+    {timeline.captions && <Captions caps={timeline.captions} t={f / timeline.fps} />}
+    {wipes.map((at) => (
+      <svg key={`w${at}`} width={w} height={h} style={{ position: 'absolute', inset: 0 }}>
+        <ZigZagWipe p={(f - (at - WIPE)) / WIPE} color={COLORS.champagne} mode="cover" w={w} h={h} />
+        <ZigZagWipe p={(f - at) / (WIPE + 4)} color={COLORS.champagne} mode="reveal" w={w} h={h} />
+        {f >= at - 1 && f < at + 1 && <rect width={w} height={h} fill={COLORS.champagne} />}
+      </svg>
+    ))}
+  </>
+}
+
+export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
+  const f = useCurrentFrame()
+  const current = timeline.shots.find((x) => f >= x.from && f < x.to)
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      <style>{fontFaces()}</style>
+      {voice && <Audio src={staticFile(voice)} />}
+      <EpisodeFrame timeline={timeline} f={f} />
+      {current && cornerLogo(current.shot.kind) && (
+        <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
+      )}
+      <GrainOverlay frame={f} />
+    </AbsoluteFill>
+  )
+}
