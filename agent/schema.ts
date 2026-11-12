@@ -3,12 +3,13 @@
 // folder, shared by every gate and step (one definition only).
 // ============================================================
 
-export const AREAS = ['investing', 'personal-finance', 'ai-tech', 'business', 'crypto'] as const
+// # LW topic areas (owner 2026-11-13): discipline, comebacks, mindset, psychology
+export const AREAS = ['discipline', 'comebacks', 'mindset', 'psychology'] as const
 export type Area = (typeof AREAS)[number]
 // # owner's topic split (spec §5)
-export const AREA_SHARE: Record<Area, number> = { investing: 0.3, 'personal-finance': 0.25, 'ai-tech': 0.2, business: 0.2, crypto: 0.05 }
+export const AREA_SHARE: Record<Area, number> = { discipline: 0.25, comebacks: 0.25, mindset: 0.25, psychology: 0.25 }
 
-export const FORMATS = ['explainer', 'list', 'guide', 'case-study', 'news', 'comparison'] as const
+export const FORMATS = ['explainer', 'list', 'guide', 'case-study', 'news', 'comparison', 'story'] as const
 export type Format = (typeof FORMATS)[number]
 
 // ------------------------------------------------------------ script.json

@@ -30,7 +30,9 @@ register('gate-plan', 'gate-plan <job>  — check plan.json, write timeline.json
   const plan = readJson<PlanDoc>(join(dir, 'plan.json'))
   const words = readJson<TimedWord[]>(join(dir, 'words.json'))
   const duration = Number(job.steps.voice?.duration)
-  const r = gatePlan(plan, words, { duration, history: readHistory().filter((h) => h.job !== dir), ...PACE[job.kind === 'short' ? 'short' : 'long'] })
+  // # LW: the hero ACTS the story, so a job may allow him in more scenes than the default (owner decides per video)
+  const maxPresenter = (job as { maxPresenter?: number }).maxPresenter
+  const r = gatePlan(plan, words, { duration, history: readHistory().filter((h) => h.job !== dir), ...PACE[job.kind === 'short' ? 'short' : 'long'], ...(maxPresenter ? { maxPresenterPieces: maxPresenter } : {}) })
   if (!r.ok) {
     for (const p of r.problems) console.log(`  - ${p}`)
     refuse(`plan gate failed with ${r.problems.length} problem(s)`)
