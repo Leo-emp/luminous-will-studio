@@ -1,16 +1,9 @@
+# Luminous Will Studio — PUBLIC repo: secrets and media never get committed
 node_modules/
-.next/
-.env
-.env.local
-*.db
-drizzle/meta/
-
-.vercel
 .env*
+!.env.example
+*.db
 output/
-
-.superpowers/
-
-# render jobs (videos live on R2) and TypeScript cache
 temp/
+.superpowers/
 tsconfig.tsbuildinfo
