@@ -6,16 +6,15 @@ import { Emblem } from '../../art/logo/Emblem'
 import { Wordmark } from '../../art/logo/Wordmark'
 import { COLORS } from '../../art/tokens'
 
-test('emblem is the burgundy LW monogram', () => {
+test('emblem is the old Luminous Will lion badge (owner 2026-11-15)', () => {
   const html = renderToStaticMarkup(<svg><Emblem size={200} /></svg>)
-  expect(html).toContain('linearGradient')
-  expect(html.toUpperCase()).toContain(COLORS.LW.burgundy.toUpperCase())
-  expect(html).toContain('>LW<')
+  expect(html).toContain('lw-logo.png')
+  expect(html).not.toContain('>LW<')
 })
 
-test('two emblems on one page do not share gradient ids', () => {
+test('two emblems on one page do not share clip ids', () => {
   const html = renderToStaticMarkup(<svg><Emblem size={40} /><Emblem size={40} /></svg>)
-  const ids = [...html.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1])
+  const ids = [...html.matchAll(/<clipPath id="([^"]+)"/g)].map((m) => m[1])
   expect(new Set(ids).size).toBe(ids.length)
   expect(ids.length).toBeGreaterThanOrEqual(2)
 })

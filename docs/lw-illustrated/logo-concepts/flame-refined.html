@@ -1,0 +1,101 @@
+<!doctype html>
+<!-- LW logo, round 2: the owner picked INNER FLAME and asked for a premium-brand version.
+     Premium moves: one or two colours only, balanced geometry, the person is NEGATIVE SPACE
+     (carved out of the flame, never a stick figure drawn on it), a refined wide-tracked serif wordmark. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inner Flame Refined</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --burg:#7E1F35; --burg-d:#4E1020; --cream:#F7EDE2; --ink:#2A0F18; --gold:#E3B35B; --gold-l:#F3D79A; --paper:#FBF6F0; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--paper); color:var(--ink); font-family:Inter, sans-serif; padding:40px 16px 60px; }
+  h1 { font:500 44px "Cormorant Garamond", serif; letter-spacing:.14em; text-align:center; text-transform:uppercase; color:var(--burg); }
+  .sub { text-align:center; margin:8px 0 34px; font-size:15px; opacity:.7; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:26px; max-width:1220px; margin:0 auto; }
+  .card { background:#fff; border:1px solid #EADCCF; border-radius:20px; overflow:hidden; }
+  .head { padding:20px 22px 0; font:600 13px Inter; letter-spacing:.16em; text-transform:uppercase; color:var(--burg); }
+  .head span { display:block; font:500 14px Inter; letter-spacing:0; text-transform:none; color:var(--ink); opacity:.65; margin-top:4px; }
+  .hero { margin:16px; border-radius:14px; background:radial-gradient(circle at 50% 40%, #8E2640, var(--burg-d)); height:250px; display:flex; align-items:center; justify-content:center; }
+  .hero svg { width:150px; height:150px; }
+  .duo { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 16px; }
+  .tile { border-radius:12px; height:120px; display:flex; align-items:center; justify-content:center; }
+  .tile.cream { background:var(--cream); } .tile.ink { background:var(--ink); }
+  .tile svg { width:78px; height:78px; }
+  .lock { margin:16px; padding:22px 10px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; gap:14px; }
+  .lock svg { width:52px; height:52px; }
+  .wm b { display:block; white-space:nowrap; font:600 24px/1 "Cormorant Garamond", serif; letter-spacing:.2em; text-transform:uppercase; color:var(--ink); }
+  .wm i { display:block; white-space:nowrap; font:500 9.5px Inter; letter-spacing:.22em; text-transform:uppercase; color:var(--burg); font-style:normal; margin-top:8px; }
+  .smalls { display:flex; gap:16px; align-items:center; justify-content:center; padding:4px 16px 22px; }
+  .app { width:64px; height:64px; border-radius:15px; background:var(--burg); display:flex; align-items:center; justify-content:center; }
+  .app svg { width:44px; height:44px; }
+  .pfp { width:44px; height:44px; border-radius:50%; background:var(--burg); display:flex; align-items:center; justify-content:center; }
+  .pfp svg { width:30px; height:30px; } .pfp.s { width:26px; height:26px; } .pfp.s svg { width:18px; height:18px; }
+  .lbl { font-size:11px; opacity:.55; }
+</style>
+</head>
+<body>
+<h1>Inner Flame · refined</h1>
+<p class="sub">Three premium takes on your pick. Each is shown on burgundy, cream and black, with the wordmark, the app icon and profile sizes.</p>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- the shared flame silhouette: one tall lick, balanced, slightly asymmetric like a real flame -->
+    <path id="flamePath" d="M114 12 C100 38 132 58 141 92 C150 126 139 158 114 173 C109 176 104 178 100 178 C96 178 91 176 86 173 C61 158 50 126 59 94 C67 66 100 52 114 12 Z"/>
+    <!-- the inner flame (same shape, smaller) for the layered take -->
+    <path id="innerPath" d="M106 70 C102 88 120 100 126 118 C132 138 126 158 110 168 L90 168 C74 158 68 138 74 118 C80 100 100 90 102 70 Z"/>
+
+    <!-- A · CARVED: a solid flame; the person is cut out of it (head + rising shoulders), standing in the fire -->
+    <mask id="carve">
+      <rect width="200" height="200" fill="#fff"/>
+      <circle cx="100" cy="116" r="10.5" fill="#000"/>
+      <path d="M78 166 C79 148 88 134 100 134 C112 134 121 148 122 166 Z" fill="#000"/>
+    </mask>
+    <symbol id="A" viewBox="0 0 200 200"><use href="#flamePath" fill="currentColor" mask="url(#carve)"/></symbol>
+
+    <!-- B · MONOLINE: one fine outline flame; the person is the inner flame (head + body as a second, smaller flame) -->
+    <symbol id="B" viewBox="0 0 200 200">
+      <use href="#flamePath" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+      <circle cx="100" cy="116" r="10.5" fill="currentColor"/>
+      <path d="M78 166 C79 148 88 134 100 134 C112 134 121 148 122 166 Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- C · SPLIT: the flame in two tones meeting at the person — light (luminous) on the right, deep (will) on the left -->
+    <clipPath id="flameClip"><use href="#flamePath"/></clipPath>
+    <symbol id="C" viewBox="0 0 200 200">
+      <g mask="url(#carve)">
+        <use href="#flamePath" fill="currentColor" opacity=".5"/>
+        <use href="#innerPath" fill="currentColor"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grid">
+  <!-- one card per take; colour = the mark's currentColor on each background -->
+  <script>
+    const takes = [
+      ['A', 'A · Carved', 'Solid flame, the person cut out of it: bold and timeless'],
+      ['B', 'B · Monoline', 'Fine outline flame with the person as its inner flame: light and elegant'],
+      ['C', 'C · Layered', 'A soft outer flame and a bright inner one: the light inside the person'],
+    ]
+    for (const [id, name, why] of takes) {
+      const use = (c) => `<svg style="color:${c}"><use href="#${id}"/></svg>`
+      document.write(`
+      <div class="card">
+        <div class="head">${name}<span>${why}</span></div>
+        <div class="hero">${use('var(--gold)')}</div>
+        <div class="duo"><div class="tile cream">${use('var(--burg)')}</div><div class="tile ink">${use('var(--gold-l)')}</div></div>
+        <div class="lock">${use('var(--burg)')}<div class="wm"><b>Luminous Will</b><i>Discipline · Comebacks · Mindset</i></div></div>
+        <div class="smalls">
+          <div class="app">${use('var(--gold)')}</div><span class="lbl">app</span>
+          <div class="pfp">${use('var(--gold)')}</div><div class="pfp s">${use('var(--gold)')}</div><span class="lbl">profile / tiny</span>
+        </div>
+      </div>`)
+    }
+  </script>
+</div>
+</body>
+</html>

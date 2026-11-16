@@ -32,13 +32,13 @@ const Study: React.FC<PieceProps> = ({ f, c }) => {
   const s18 = c('s18'), sixty = c('s18:sixtysix'), own = c('s18:own')
   const s19 = c('s19'), eighteen = c('s19:eighteen'), hundred = c('s19:hundred')
   const s20 = c('s20'), missing = c('s20:missing'), ruin = c('s20:ruin')
-  const s20b = c('s20b'), slip = c('s20b:slip'), story = c('s20b:story'), damage = c('s20b:damage')
+  const s20b = c('s20b'), slip = c('s20b:slip'), story = c('s20b:story'), damage = c('s20b:damage'), tell = c('s20b:tell')
 
   const A = win(f, 0, s18 + 4), B = win(f, s18, s19 + 4), C = win(f, s19, s20 + 4), D = win(f, s20, s20b + 4), E = on(f, s20b, 10)
   const filled = Math.round(lerp(0, 66, easeOut(span(f, s18 + 6, own))))
   // # D: the chain keeps going past the missed day (square 24)
   const filledD = Math.round(lerp(20, 66, span(f, s20, ruin + 10)))
-  const hero: Beat[] = [[s20b, 'walkA', 'neutral'], [slip, 'oops', 'shocked'], [slip + 30, 'facepalm', 'worried'], [story, 'idle', 'thinking'], [damage, 'confident', 'smiling']]
+  const hero: Beat[] = [[s20b, 'walkA', 'neutral'], [slip, 'oops', 'shocked'], [slip + 30, 'facepalm', 'worried'], [story, 'idle', 'thinking'], [tell, 'slump', 'worried'], [damage, 'confident', 'smiling']]
   const minis = ['hero', 'hero-fit', 'hero-struggling', 'hero-rich', 'hero', 'hero-fit', 'hero-struggling']
 
   return (
@@ -101,7 +101,7 @@ const Study: React.FC<PieceProps> = ({ f, c }) => {
 }
 
 export const D3_STUDY = makePiece('d3-study', 'Day 3: the London habit study', {
-  beats: ['s17:london', 's17:followed', 's17:building', 's17:habit', 's18:sixtysix', 's18:own', 's19:eighteen', 's19:hundred', 's20:missing', 's20:ruin', 's20b:slip', 's20b:story', 's20b:damage'],
+  beats: ['s17:london', 's17:followed', 's17:building', 's17:habit', 's18:sixtysix', 's18:own', 's19:eighteen', 's19:hundred', 's20:missing', 's20:ruin', 's20b:slip', 's20b:story', 's20b:tell', 's20b:damage'],
   sfx: [['s17:followed', 'softpop'], ['s18:sixtysix', 'tick'], ['s20:missing', 'thud'], ['s20:ruin', 'chime'], ['s20b:slip', 'swish'], ['s20b:damage', 'crack']],
   Component: Study, mood: 'light', canvas: 'tall',
 })

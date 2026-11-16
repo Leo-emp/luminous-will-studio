@@ -335,8 +335,10 @@ export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
       <style>{fontFaces()}</style>
       {voice && <Audio src={staticFile(voice)} />}
       <EpisodeFrame timeline={timeline} f={f} />
+      {/* # lion badge top-left, 30 px in. The badge fills 600 of the emblem's 693-wide canvas, */}
+      {/* # so size 122 = a 106 px badge (owner 2026-11-16: "slightly smaller" than the 124 px one) */}
       {current && cornerLogo(current.shot.kind) && (
-        <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
+        <svg width={122} height={120} style={{ position: 'absolute', left: 22, top: 23 }}><Emblem size={122} /></svg>
       )}
       <GrainOverlay frame={f} />
     </AbsoluteFill>

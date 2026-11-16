@@ -1,46 +1,45 @@
 // ============================================================
-// LUMINOUS WILL EMBLEM — PLACEHOLDER monogram until the owner
-// approves a real LW logo: a burgundy disc with a soft cream
-// rim ("arms"), the letters LW ("slash"), and a small rising
-// light ray above them ("bars"). Same props and the same
-// 693 × 678 canvas as the old emblem, so every caller (episode
-// corner, covers, thumbnails, LogoReveal) keeps working.
-// `progress` (0..1 per part) lets LogoReveal animate it.
+// LUMINOUS WILL EMBLEM — the ORIGINAL lion badge from the old formats
+// (owner 2026-11-15: "use the same logo we used for the old formats").
+// public/lw-logo.png is the round lion + black ring cut out of
+// LuminousWill/assets/logo.png (copied, the old repo is untouched).
+// Same props and the same 693 × 678 canvas as before, so every caller
+// (episode corner, covers, thumbnails, LogoReveal) keeps working.
+// `progress` (0..1 per part) lets LogoReveal animate it:
+//   arms  = the badge fades in   · slash = it scales up to full size
+//   bars  = a soft glow ring around it
 // ============================================================
 
 import React from 'react'
+import { staticFile } from 'remotion'
 import { COLORS } from '../tokens'
 import { useUid } from '../uid'
 
 export type EmblemProgress = { arms: number; slash: number; bars: number }
 const DONE: EmblemProgress = { arms: 1, slash: 1, bars: 1 }
 
-// # Disc centre and radius inside the 693 × 678 canvas
+// # Badge centre and radius inside the 693 × 678 canvas
 const CX = 346, CY = 339, R = 300
 
 export const Emblem: React.FC<{ size: number; progress?: EmblemProgress; x?: number; y?: number }> = ({
   size, progress = DONE, x = 0, y = 0,
 }) => {
-  const disc = useUid('lwdisc')
+  const clip = useUid('lwclip')
   const p = progress
-  const C = 2 * Math.PI * R
+  // # during the reveal the badge grows from 85 % to 100 %
+  const k = 0.85 + 0.15 * p.slash
   return (
     <svg x={x} y={y} width={size} height={size * (678 / 693)} viewBox="0 0 693 678" overflow="visible">
       <defs>
-        <linearGradient id={disc} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#A63A50" /><stop offset="60%" stopColor={COLORS.LW.burgundy} /><stop offset="100%" stopColor="#5C1426" />
-        </linearGradient>
+        {/* # round clip so the PNG's edge pixels never show as a square */}
+        <clipPath id={clip}><circle cx={CX} cy={CY} r={R} /></clipPath>
       </defs>
-      {/* # disc fades in, the cream rim draws around it */}
-      <circle cx={CX} cy={CY} r={R} fill={`url(#${disc})`} opacity={p.arms} />
-      <circle cx={CX} cy={CY} r={R - 14} fill="none" stroke={COLORS.LW.cream} strokeWidth={12} opacity={0.9}
-        strokeDasharray={C} strokeDashoffset={C * (1 - p.arms)} transform={`rotate(-90 ${CX} ${CY})`} />
-      {/* # the monogram */}
-      <text x={CX} y={CY + 95} textAnchor="middle" fill={COLORS.LW.cream} opacity={p.slash}
-        style={{ font: '400 300px "Bebas Neue"', letterSpacing: 8 }}>LW</text>
-      {/* # a small rising ray of light: the "luminous" */}
-      <path d={`M${CX - 70} ${CY - 120} L${CX} ${CY - 190} L${CX + 70} ${CY - 120}`} fill="none" stroke={COLORS.LW.cream}
-        strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" opacity={p.bars} />
+      {/* # soft cream glow ring behind the badge */}
+      <circle cx={CX} cy={CY} r={R + 10} fill="none" stroke={COLORS.LW.cream} strokeWidth={14} opacity={0.6 * p.bars} />
+      <g opacity={p.arms} transform={`translate(${CX} ${CY}) scale(${k}) translate(${-CX} ${-CY})`}>
+        <circle cx={CX} cy={CY} r={R} fill="#FFFFFF" />
+        <image href={staticFile('lw-logo.png')} x={CX - R} y={CY - R} width={R * 2} height={R * 2} clipPath={`url(#${clip})`} />
+      </g>
     </svg>
   )
 }

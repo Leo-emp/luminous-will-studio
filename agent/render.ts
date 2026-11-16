@@ -264,11 +264,15 @@ export const autoSfx = (tl: Pick<Timeline, 'fps' | 'shots' | 'sfx'>): Sfx[] => {
 // # The voiceover loudness the owner approved for every video: louder master, voice about 2 dB further above the SFX
 // # Shorts: owner picked a louder master on 2026-10-31 (≈ −10 LUFS measured, peak ≈ −1 dB) with a gentle voice compressor
 export const SHORT_COMP = 'acompressor=threshold=-20dB:ratio=2.5:attack=8:release=120'
-export const MIX = { long: { lufs: -11, sfxGain: 0.8 }, short: { lufs: -9, sfxGain: 0.8, comp: SHORT_COMP } } // # long: owner approved 2026-10-26 (≈ −12 LUFS measured)
-export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'lw'), o: { lufs: number; sfxGain: number; comp?: string } = MIX.long) => {
+// # LW owner 2026-11-13: the voice a bit louder and clearer → voice-only low cut (rumble out, more headroom)
+// # + a gentle presence lift around 3 kHz (words read clearer on phone speakers); applied to the voice, never the SFX
+export const VOICE_CLARITY = 'highpass=f=80,equalizer=f=3000:t=q:w=1:g=2.5'
+// # LW Shorts: owner approved −11.5 LUFS on 2026-11-13 (was −9 target, ≈ −11.3 measured, with an uneven first chapter)
+export const MIX = { long: { lufs: -11, sfxGain: 0.8 }, short: { lufs: -11.5, sfxGain: 0.8, comp: SHORT_COMP, voiceFx: VOICE_CLARITY } } // # long: owner approved 2026-10-26 (≈ −12 LUFS measured)
+export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'lw'), o: { lufs: number; sfxGain: number; comp?: string; voiceFx?: string } = MIX.long) => {
   const names = [...new Set(sfx.map((x) => x.name))]
   const inputs = ['-i', voice, ...names.flatMap((n) => ['-i', join(sfxDir, `${n}.wav`)])]
-  const lines: string[] = [`[0:a]aformat=sample_rates=48000:channel_layouts=mono,apad,atrim=0:${seconds.toFixed(3)}[v]`]
+  const lines: string[] = [`[0:a]aformat=sample_rates=48000:channel_layouts=mono,${o.voiceFx ? `${o.voiceFx},` : ''}apad,atrim=0:${seconds.toFixed(3)}[v]`]
   const labels: string[] = ['[v]']
   names.forEach((n, ni) => {
     const uses = sfx.filter((x) => x.name === n)

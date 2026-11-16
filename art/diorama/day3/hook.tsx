@@ -10,8 +10,8 @@ import { Alarm, Spark, Backdrop, Bed, CalPage, DAWN, DUSK, GROUND, Headline, Per
 const Hook: React.FC<PieceProps> = ({ f, c }) => {
   const s1 = c('s1')
   const one = c('s2:one'), two = c('s2:two'), three = c('s2:three'), off = c('s2:off'), you1 = c('s1:you'), unst = c('s2:unstoppable'), good = c('s2:good'), arrives = c('s2:arrives'), quietly = c('s2:quietly')
-  const s3 = c('s3'), alarm = c('s3:alarm'), bed = c('s3:bed'), smartest = c('s3:smartest')
-  const s4 = c('s4'), tell = c('s4:tell'), monday = c('s4:monday'), earth = c('s3:earth'), nobody = c('s5:nobody')
+  const s3 = c('s3'), alarm = c('s3:alarm'), bed = c('s3:bed'), minutes = c('s3:minutes')
+  const s4 = c('s4'), tell = c('s4:tell'), monday = c('s4:monday'), world = c('s3:world'), idea = c('s3:idea'), nobody = c('s5:nobody')
   const s5 = c('s5'), sw = c('s5:switch'), weak = c('s5:weakness')
   const s6 = c('s6'), brain = c('s6:brain'), built = c('s6:built')
 
@@ -41,9 +41,9 @@ const Hook: React.FC<PieceProps> = ({ f, c }) => {
         <Bed x={540} sleeper={on(f, s3, 10)} />
         <rect x={830} y={GROUND - 150} width={170} height={150} rx={10} fill="#5A3A2E" />
         <Alarm x={915} y={GROUND - 230} f={f} ring={ring} s={0.85} />
-        <g opacity={on(f, bed, 8) * (1 - on(f, s4, 8))}><ellipse cx={540} cy={GROUND - 120} rx={340} ry={90} fill="#FFE7A3" opacity={0.18 + 0.14 * on(f, smartest, 8)} /></g>
-        <g opacity={on(f, smartest, 8) * (1 - on(f, s4, 8))}><Tag x={300} y={700} text="SO COMFY" s={pop(f, smartest)} r={-5} size={56} /></g>
-        <g opacity={on(f, earth, 6) * (1 - on(f, s4, 8))}><Spark f={f} x={620} y={GROUND - 300} s={pop(f, earth)} /></g>
+        <g opacity={on(f, bed, 8) * (1 - on(f, s4, 8))}><ellipse cx={540} cy={GROUND - 120} rx={340} ry={90} fill="#FFE7A3" opacity={0.18 + 0.14 * on(f, minutes, 8) + 0.16 * on(f, world, 8)} /></g>
+        <g opacity={on(f, minutes, 8) * (1 - on(f, s4, 8))}><Tag x={300} y={700} text="5 MORE MIN" s={pop(f, minutes)} r={-5} size={56} /></g>
+        <g opacity={on(f, idea, 6) * (1 - on(f, s4, 8))}><Spark f={f} x={620} y={GROUND - 300} s={pop(f, idea)} /></g>
         <g opacity={on(f, tell, 6) * (1 - on(f, s5, 6))}>{[0, 1, 2].map((k) => <text key={k} x={700 + k * 40} y={GROUND - 260 - k * 50 - span(f, tell, tell + 40) * 40} fill={CREAM} opacity={on(f, tell + k * 6, 6)} style={{ font: `400 ${60 - k * 10}px "Bebas Neue"` }}>Z</text>)}</g>
         <g opacity={on(f, monday, 6)}><Tag x={300} y={620} text="START MONDAY" s={pop(f, monday)} r={-6} fill={CREAM} ink={BURG} /></g>
       </g>}
@@ -61,7 +61,7 @@ const Hook: React.FC<PieceProps> = ({ f, c }) => {
 }
 
 export const D3_HOOK = makePiece('d3-hook', 'Day 3: the hook (bedroom)', {
-  beats: ['s1', 's1:you', 's2:one', 's2:unstoppable', 's2:two', 's2:good', 's2:arrives', 's2:quietly', 's2:three', 's2:off', 's3', 's3:bed', 's3:alarm', 's3:smartest', 's3:earth', 's4:tell', 's4:monday', 's5:nobody', 's5:switch', 's5:weakness', 's6:brain', 's6:built'],
+  beats: ['s1', 's1:you', 's2:one', 's2:unstoppable', 's2:two', 's2:good', 's2:arrives', 's2:quietly', 's2:three', 's2:off', 's3', 's3:bed', 's3:alarm', 's3:minutes', 's3:idea', 's3:world', 's4:tell', 's4:monday', 's5:nobody', 's5:switch', 's5:weakness', 's6:brain', 's6:built'],
   sfx: [['s2:off', 'click'], ['s3:alarm', 'ding'], ['s4:monday', 'pop'], ['s5:switch', 'whoosh']],
   Component: Hook, mood: 'light', canvas: 'tall',
 })

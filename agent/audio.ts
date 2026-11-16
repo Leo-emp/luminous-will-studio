@@ -33,12 +33,15 @@ export const tone = async (out: string, seconds: number, dbfs: number) => {
   ff(['-f', 'lavfi', '-i', `sine=f=220:d=${seconds.toFixed(3)}`, '-af', `volume=${dbfs}dB`, '-ar', '24000', '-ac', '1', out], 'tone')
 }
 
-// # Join wav files with silence gaps → one wav (24 kHz mono)
-export const concatWavs = (files: string[], gap: number, out: string) => {
+// # Join wav files with silence gaps → one wav (24 kHz mono).
+// # `level` (LUFS, optional): each file is first turned up/down to that level, so chapters that came out of
+// # the voice engine louder or quieter than each other join at one even level (owner 2026-11-13)
+export const concatWavs = (files: string[], gap: number, out: string, level?: number) => {
   const inputs = files.flatMap((f) => ['-i', f])
   const parts: string[] = []
   files.forEach((_, i) => {
-    parts.push(`[${i}:a]aresample=24000,aformat=channel_layouts=mono[a${i}]`)
+    const gain = level === undefined ? '' : `,volume=${(level - lufs(files[i])).toFixed(2)}dB`
+    parts.push(`[${i}:a]aresample=24000,aformat=channel_layouts=mono${gain}[a${i}]`)
   })
   const chain = files.map((_, i) => (i < files.length - 1 && gap > 0 ? `[a${i}]apad=pad_dur=${gap}[p${i}]` : `[a${i}]anull[p${i}]`))
   const concat = `${files.map((_, i) => `[p${i}]`).join('')}concat=n=${files.length}:v=0:a=1[out]`

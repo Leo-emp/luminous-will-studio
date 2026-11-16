@@ -1,0 +1,112 @@
+<!doctype html>
+<!-- LW logo, round 3: the owner's FLAME LION idea redrawn as a clean vector.
+     Rules: lion head big + centred, 4 flame tongues (not 10), flat colours only, a simpler mark for tiny sizes.
+     Same sheet layout as round 1 (the one the owner liked): big icon, profile, tiny, wordmark, Short corner. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lion Flame Logo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --burg:#7A1428; --ink:#3A1622; --paper:#FBF5EE; --gold-l:#FFE7A3; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--paper); color:var(--ink); font-family:Inter, sans-serif; padding:40px 16px 60px; }
+  h1 { font:400 56px "Bebas Neue"; letter-spacing:3px; text-align:center; color:var(--burg); }
+  .sub { text-align:center; margin:6px 0 34px; font-size:16px; opacity:.75; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; max-width:1180px; margin:0 auto; }
+  .card { background:#fff; border:2px solid #EADCCF; border-radius:22px; padding:26px 22px; display:flex; flex-direction:column; gap:22px; align-items:center; }
+  .tag { font:400 30px "Bebas Neue"; letter-spacing:2px; color:var(--burg); text-align:center; }
+  .tag small { display:block; font:500 14px Inter; letter-spacing:0; color:var(--ink); opacity:.7; margin-top:2px; }
+  .big { width:250px; height:250px; }
+  .row { display:flex; gap:18px; align-items:center; justify-content:center; }
+  .pfp { width:64px; height:64px; } .pfp.s { width:32px; height:32px; }
+  .label { font-size:12px; opacity:.6; text-align:center; margin-top:4px; }
+  .word { display:flex; align-items:center; gap:12px; }
+  .word svg { width:56px; height:56px; }
+  .word b { display:block; font:600 30px/1 Fraunces, serif; color:var(--ink); white-space:nowrap; }
+  .word i { display:block; font:400 13px "Bebas Neue"; letter-spacing:2.4px; color:var(--burg); font-style:normal; margin-top:5px; white-space:nowrap; }
+  .short { width:170px; height:302px; border-radius:16px; overflow:hidden; position:relative; background:linear-gradient(#F6DCC6,#EFC9AE 62%,#D9A88C 62%); border:2px solid #EADCCF; }
+  .short svg.corner { position:absolute; left:10px; top:10px; width:32px; height:32px; }
+  .short .sun { position:absolute; left:50%; top:118px; width:90px; height:90px; margin-left:-45px; border-radius:50%; background:var(--gold-l); opacity:.9; }
+  .short .cap { position:absolute; left:8px; right:8px; top:212px; text-align:center; font:400 18px "Bebas Neue"; color:#fff; text-shadow:0 2px 0 var(--ink); }
+</style>
+</head>
+<body>
+<h1>Luminous Will · Lion Flame</h1>
+<p class="sub">Your lion-in-the-flame idea, redrawn clean: one bold head, four flames, flat colours.</p>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- ===== the shared pieces (200×200 box) ===== -->
+    <!-- outer flame = the mane: tongues swept up and back (left, tall main, small right) + a beard flame under the chin -->
+    <path id="mane" d="M96 188 C62 184 38 160 38 128 C38 104 46 86 50 58 C58 74 66 82 74 86 C70 60 80 38 94 14 C100 36 108 46 112 56 C118 48 126 42 136 34 C138 48 136 58 134 64 L140 120 C152 132 160 146 164 160 C152 157 142 158 134 160 C128 176 114 186 96 188 Z"/>
+    <!-- the lion head in profile, facing right: LONG horizontal muzzle, square nose, hanging upper lip, chin.
+         Its back edge is hidden under the ruff, so the face reads as a lion, never a hooded person -->
+    <path id="head" d="M100 70 C108 62 120 60 132 64 C136 66 138 68 140 70 L164 86 C168 88 168 92 167 96 L166 100 C163 102 161 103 160 104 C164 110 162 118 154 120 C152 128 144 134 132 134 L100 138 Z"/>
+    <!-- the ruff: inner mane locks drawn OVER the back of the head, three tips curling forward (forehead, cheek, jaw) -->
+    <path id="ruff" d="M98 178 C72 172 56 152 56 128 C56 108 64 94 70 84 C76 94 80 98 86 100 C84 80 92 62 104 44 C108 56 112 60 124 56 C119 66 113 72 109 78 C115 84 121 90 125 99 C117 100 111 104 109 110 C115 120 123 128 133 138 C125 140 119 142 115 144 C118 158 112 172 98 178 Z"/>
+    <!-- face features, shared -->
+    <g id="brow"><path d="M128 73 C136 71 144 74 150 79" stroke="#7A1428" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    <path id="eye" d="M134 83 C138 80 144 80 148 83 C144 86 138 86 134 83 Z"/>
+    <path id="nose" d="M157 84 L166 87 C168 91 167 97 163 99 L157 94 Z"/>
+    <g id="mouth"><path d="M158 110 C150 116 142 116 135 114" stroke="#7A1428" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+    <g id="dots" fill="#7A1428"><circle cx="146" cy="101" r="2"/><circle cx="152" cy="104" r="2"/><circle cx="147" cy="107" r="2"/></g>
+
+    <!-- A · FULL: for the big logo, banner, covers -->
+    <symbol id="A" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="98" fill="#7A1428"/>
+      <use href="#mane" fill="#E2672A"/>
+      
+      <use href="#head" fill="#FFE2A0" stroke="#7A1428" stroke-width="5" stroke-linejoin="round"/>
+      <use href="#ruff" fill="#F4B23E" stroke="#7A1428" stroke-width="5" stroke-linejoin="round"/>
+      <use href="#brow"/><use href="#eye" fill="#7A1428"/><use href="#nose" fill="#7A1428"/><use href="#mouth"/><use href="#dots"/>
+    </symbol>
+
+    <!-- B · SIMPLE: for 32 px and smaller: thicker cuts, eye + nose only -->
+    <symbol id="B" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="98" fill="#7A1428"/>
+      <use href="#mane" fill="#E2672A"/>
+      
+      <use href="#head" fill="#FFE2A0" stroke="#7A1428" stroke-width="7" stroke-linejoin="round"/>
+      <use href="#ruff" fill="#F4B23E" stroke="#7A1428" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M132 83 C137 78 145 78 150 83 C145 88 137 88 132 83 Z" fill="#7A1428"/><use href="#nose" fill="#7A1428"/>
+    </symbol>
+
+    <!-- C · ONE COLOUR: gold on burgundy, for watermarks and stamps -->
+    <symbol id="C" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="98" fill="#7A1428"/>
+      <use href="#mane" fill="#F4C35A"/>
+      
+      <use href="#head" fill="#F4C35A" stroke="#7A1428" stroke-width="6" stroke-linejoin="round"/>
+      <use href="#ruff" fill="#F4C35A" stroke="#7A1428" stroke-width="6" stroke-linejoin="round"/>
+      <use href="#brow"/><use href="#eye" fill="#7A1428"/><use href="#nose" fill="#7A1428"/><use href="#mouth"/><use href="#dots"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grid">
+  <script>
+    const cards = [
+      ['A', 'A · Full', 'the main logo: banner, covers, end card'],
+      ['B', 'B · Simple', 'the same mark, stripped down for tiny sizes'],
+      ['C', 'C · One colour', 'gold on burgundy, for watermarks and stamps'],
+    ]
+    for (const [id, name, why] of cards) {
+      const u = (cls) => `<svg class="${cls}"><use href="#${id}"/></svg>`
+      document.write(`
+      <div class="card">
+        <div class="tag">${name}<small>${why}</small></div>
+        ${u('big')}
+        <div class="row">
+          <div>${u('pfp')}<div class="label">profile</div></div>
+          <div>${u('pfp s')}<div class="label">tiny</div></div>
+        </div>
+        <div class="word">${u('')}<div><b>Luminous Will</b><i>Discipline · Comebacks · Mindset</i></div></div>
+        <div class="short">${u('corner')}<div class="sun"></div><div class="cap">DAY 3 IS WHERE YOU BEGIN</div></div>
+      </div>`)
+    }
+  </script>
+</div>
+</body>
+</html>

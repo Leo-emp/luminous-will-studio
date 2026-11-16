@@ -74,3 +74,23 @@ test('stress filter lifts only the stressed words, with soft ramps', () => {
 })
 
 void mkdirSync
+
+// # Owner 2026-11-13: chapter 1 came out of Azure ~3 dB quieter than the rest → every chapter is
+// # brought to the same level BEFORE they are joined, so the voice never dips between chapters
+test('chapters voiced at different levels come out at the same level in voice.wav', async () => {
+  const dir = newJob('voice level test', { root: mkdtempSync(join(tmpdir(), 'lwlevel-')) })
+  writeFileSync(join(dir, 'script.json'), JSON.stringify(script()))
+  // # chapter A very quiet (−40 dBFS), chapter B loud (−12 dBFS)
+  let n = 0
+  const uneven: Synth = async (text, outWav) => {
+    const r = await fakeSynth([])(text, outWav)
+    await tone(outWav, 3, n++ === 0 ? -40 : -12)
+    return r
+  }
+  await voiceJob(dir, { synth: uneven, gap: 0.5 })
+  const { ff } = await import('../../agent/audio')
+  const a = join(dir, 'a.wav'), b = join(dir, 'b.wav')
+  ff(['-i', join(dir, 'voice.wav'), '-t', '2.5', a], 'cut a')
+  ff(['-ss', '4', '-i', join(dir, 'voice.wav'), '-t', '2.5', b], 'cut b')
+  expect(Math.abs(lufs(a) - lufs(b))).toBeLessThan(1)
+}, 120_000)

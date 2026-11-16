@@ -110,6 +110,12 @@ export const POSES = {
   nodB: { head: 12, lean: 0, bob: 2, expression: 'smiling', r: arm(-6, 4, 'rest'), l: arm(6, -4, 'rest'), ...STAND },
   relax: { head: -4, lean: 0, bob: 0, expression: 'smiling', r: arm(-150, -112, 'open', 0.85, 0.9), l: arm(150, 112, 'open', 0.85, 0.9), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
   leanBack: { head: -3, lean: 5, bob: 0, expression: 'smug', r: arm(16, 104, 'fist', 0.85, 0.8), l: arm(-16, -104, 'fist', 0.85, 0.8), rl: leg(4, -2), ll: leg(-12, 3) },
+  // # LW scenes (2026-11-16): a proposal, joy, sitting on a bed with a phone, head in hands
+  kneel: { head: 4, lean: 2, bob: 0, expression: 'smiling', r: arm(-70, -30, 'hold', 0.95, 0.85), l: arm(8, -20, 'rest', 0.9, 0.8), rl: leg(-80, 80), ll: leg(0, 90) },
+  joyHands: { head: -4, lean: 0, bob: -2, expression: 'smiling', r: arm(26, 150, 'open', 0.85, 1.08), l: arm(-26, -150, 'open', 0.85, 1.08), ...STAND },
+  sitPhone: { head: 12, lean: 0, bob: 0, expression: 'neutral', r: arm(2, 122, 'hold', 0.84, 0.66), l: arm(10, 40, 'rest', 0.95, 0.85), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
+  sitSlump: { head: 18, lean: 4, bob: 6, expression: 'worried', r: arm(-6, 30, 'rest', 0.9, 0.75), l: arm(6, -30, 'rest', 0.9, 0.75), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
+  headHands: { head: 16, lean: 4, bob: 4, expression: 'worried', r: arm(24, 150, 'open', 0.85, 1.15), l: arm(-24, -150, 'open', 0.85, 1.15), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
 } satisfies Record<string, Pose>
 
 export type PoseId = keyof typeof POSES

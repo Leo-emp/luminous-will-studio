@@ -1,0 +1,126 @@
+<!doctype html>
+<!-- LW logo concepts (round 1): three directions for the owner to compare by eye.
+     Each column shows: the big icon, the icon as a tiny profile picture, the wordmark,
+     and the icon in the corner of a Short. Colours = LW tokens (burgundy / cream / ink / gold). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LW Logo Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --burg:#7E1F35; --burg-d:#5C1426; --cream:#F7EDE2; --ink:#3A1622; --gold:#F4C35A; --gold-l:#FFE7A3; --paper:#FBF5EE; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--paper); color:var(--ink); font-family:Inter, sans-serif; padding:40px 16px 60px; }
+  h1 { font:400 56px "Bebas Neue"; letter-spacing:3px; text-align:center; color:var(--burg); }
+  .sub { text-align:center; margin:6px 0 34px; font-size:16px; opacity:.75; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; max-width:1180px; margin:0 auto; }
+  .card { background:#fff; border:2px solid #EADCCF; border-radius:22px; padding:26px 22px; display:flex; flex-direction:column; gap:22px; align-items:center; }
+  .tag { font:400 30px "Bebas Neue"; letter-spacing:2px; color:var(--burg); }
+  .tag small { display:block; font:500 14px Inter; letter-spacing:0; color:var(--ink); opacity:.7; text-align:center; margin-top:2px; }
+  .big { width:230px; height:230px; }
+  .row { display:flex; gap:18px; align-items:center; justify-content:center; }
+  .pfp { width:64px; height:64px; } .pfp.s { width:36px; height:36px; }
+  .label { font-size:12px; opacity:.6; text-align:center; margin-top:4px; }
+  .word { display:flex; align-items:center; gap:12px; }
+  .word svg { width:54px; height:54px; }
+  .word b { display:block; font:600 30px/1 Fraunces, serif; color:var(--ink); }
+  .word i { display:block; font:400 13px "Bebas Neue"; letter-spacing:2.4px; color:var(--burg); font-style:normal; margin-top:5px; }
+  .short { width:170px; height:302px; border-radius:16px; overflow:hidden; position:relative; background:linear-gradient(#F6DCC6,#EFC9AE 62%,#D9A88C 62%); border:2px solid #EADCCF; }
+  .short svg.corner { position:absolute; left:10px; top:10px; width:30px; height:30px; }
+  .short .sun { position:absolute; left:50%; top:118px; width:90px; height:90px; margin-left:-45px; border-radius:50%; background:var(--gold-l); opacity:.9; }
+  .short .cap { position:absolute; left:8px; right:8px; top:212px; text-align:center; font:400 18px "Bebas Neue"; color:#fff; text-shadow:0 2px 0 var(--ink); }
+</style>
+</head>
+<body>
+<h1>Luminous Will · logo concepts</h1>
+<p class="sub">Three directions. Pick one, or mix parts, and I'll refine it.</p>
+
+<!-- ============ reusable icon symbols ============ -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- 1. RISING SUN: a gold half sun on the horizon; its rays climb left → right like steps -->
+    <symbol id="sun" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="var(--burg)"/>
+      <circle cx="100" cy="100" r="86" fill="none" stroke="var(--gold)" stroke-width="3" opacity=".45"/>
+      <!-- rays: five, each a little longer than the last (the climb) -->
+      <g stroke="var(--gold)" stroke-width="10" stroke-linecap="round">
+        <line x1="62" y1="118" x2="44" y2="112"/>
+        <line x1="70" y1="98"  x2="52" y2="80"/>
+        <line x1="88" y1="86"  x2="80" y2="58"/>
+        <line x1="110" y1="84" x2="116" y2="46"/>
+        <line x1="132" y1="94" x2="154" y2="56"/>
+      </g>
+      <!-- the half sun -->
+      <path d="M62 128 A38 38 0 0 1 138 128 Z" fill="var(--gold)"/>
+      <!-- horizon -->
+      <rect x="38" y="128" width="124" height="8" rx="4" fill="var(--cream)"/>
+      <rect x="66" y="144" width="68" height="6" rx="3" fill="var(--cream)" opacity=".55"/>
+    </symbol>
+
+    <!-- 2. INNER FLAME: a flame whose cream heart is a person standing tall -->
+    <symbol id="flame" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="var(--burg)"/>
+      <!-- outer flame (gold) -->
+      <path d="M100 26 C122 56 150 74 150 116 C150 146 128 170 100 170 C72 170 50 146 50 116 C50 92 64 78 74 62 C78 80 84 88 92 92 C88 70 92 46 100 26 Z" fill="var(--gold)"/>
+      <!-- inner glow -->
+      <path d="M100 70 C114 90 132 102 132 126 C132 146 118 160 100 160 C82 160 68 146 68 126 C68 106 86 92 100 70 Z" fill="var(--gold-l)"/>
+      <!-- the person: head + body, standing tall in the heart of the flame -->
+      <!-- arms raised in a V (the win), so it reads as a person, never a keyhole -->
+      <circle cx="100" cy="112" r="8.5" fill="var(--burg)"/>
+      <g stroke="var(--burg)" stroke-width="7" stroke-linecap="round" fill="none">
+        <path d="M100 124 L100 144"/>
+        <path d="M100 128 L86 108 M100 128 L114 108"/>
+        <path d="M100 144 L92 160 M100 144 L108 160"/>
+      </g>
+    </symbol>
+
+    <!-- 3. LW MONOGRAM: the L's foot turns into the W; a spark where the last stroke ends -->
+    <symbol id="mono" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="var(--burg)"/>
+      <polyline points="48,52 48,140 72,140 88,92 104,140 122,140 140,72" fill="none" stroke="var(--cream)" stroke-width="15" stroke-linejoin="round" stroke-linecap="round"/>
+      <!-- the spark -->
+      <path d="M152 44 L157 58 L171 63 L157 68 L152 82 L147 68 L133 63 L147 58 Z" fill="var(--gold)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grid">
+  <!-- ============ 1 ============ -->
+  <div class="card">
+    <div class="tag">1 · Rising Sun <small>my pick: every day a new start, climbing step by step</small></div>
+    <svg class="big"><use href="#sun"/></svg>
+    <div class="row">
+      <div><svg class="pfp"><use href="#sun"/></svg><div class="label">profile</div></div>
+      <div><svg class="pfp s"><use href="#sun"/></svg><div class="label">tiny</div></div>
+    </div>
+    <div class="word"><svg><use href="#sun"/></svg><div><b>Luminous Will</b><i>Discipline · Comebacks · Mindset</i></div></div>
+    <div class="short"><svg class="corner"><use href="#sun"/></svg><div class="sun"></div><div class="cap">DAY 3 IS WHERE YOU BEGIN</div></div>
+  </div>
+
+  <!-- ============ 2 ============ -->
+  <div class="card">
+    <div class="tag">2 · Inner Flame <small>the fire you keep lit when motivation runs out</small></div>
+    <svg class="big"><use href="#flame"/></svg>
+    <div class="row">
+      <div><svg class="pfp"><use href="#flame"/></svg><div class="label">profile</div></div>
+      <div><svg class="pfp s"><use href="#flame"/></svg><div class="label">tiny</div></div>
+    </div>
+    <div class="word"><svg><use href="#flame"/></svg><div><b>Luminous Will</b><i>Discipline · Comebacks · Mindset</i></div></div>
+    <div class="short"><svg class="corner"><use href="#flame"/></svg><div class="sun"></div><div class="cap">DAY 3 IS WHERE YOU BEGIN</div></div>
+  </div>
+
+  <!-- ============ 3 ============ -->
+  <div class="card">
+    <div class="tag">3 · LW Monogram <small>clean and premium; strongest at tiny sizes</small></div>
+    <svg class="big"><use href="#mono"/></svg>
+    <div class="row">
+      <div><svg class="pfp"><use href="#mono"/></svg><div class="label">profile</div></div>
+      <div><svg class="pfp s"><use href="#mono"/></svg><div class="label">tiny</div></div>
+    </div>
+    <div class="word"><svg><use href="#mono"/></svg><div><b>Luminous Will</b><i>Discipline · Comebacks · Mindset</i></div></div>
+    <div class="short"><svg class="corner"><use href="#mono"/></svg><div class="sun"></div><div class="cap">DAY 3 IS WHERE YOU BEGIN</div></div>
+  </div>
+</div>
+</body>
+</html>

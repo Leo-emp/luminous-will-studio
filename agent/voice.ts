@@ -13,6 +13,8 @@ import { readJson, writeJson } from './jobs'
 import type { ScriptDoc, TimedWord } from './schema'
 
 export const VOICE = 'en-US-Andrew:DragonHDLatestNeural'
+// # the common level each chapter is brought to before joining (≈ what Azure delivers on average)
+export const CHAPTER_LUFS = -22
 
 // # A synthesiser writes `outWav` and returns word timings (seconds) with the
 // # character offset of each word inside `text`
@@ -78,7 +80,8 @@ export const voiceJob = async (dir: string, opts: { synth: Synth; gap?: number; 
 
   // # join chapters, then stress + loudness in one pass
   const raw = join(vdir, 'raw.wav')
-  concatWavs(chapters.map((c) => join(vdir, c.file)), gap, raw)
+  // # every chapter to one level first (Azure's chapters differ by up to ~3 dB) → no dip between chapters
+  concatWavs(chapters.map((c) => join(vdir, c.file)), gap, raw, CHAPTER_LUFS)
   const windows = script.chapters.flatMap((c) => c.sentences).filter((s) => s.stress).flatMap((s) => {
     const hit = all.find((w) => w.sid === s.id && norm(w.w) === norm(s.stress!))
     return hit ? [{ s: hit.s, e: hit.e }] : []

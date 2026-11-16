@@ -12,6 +12,7 @@ import { getCover } from './covers/index'
 import { SIZE as COVER_SIZE } from './covers/kit'
 import { FPS, H, W } from './tokens'
 import { HeroFaces, HeroSheet } from './stylebible/HeroLW'
+import { PoseLab } from './stylebible/PoseLab'
 import { Episode, type EpisodeProps, type EpisodeTimeline } from './episode/Episode'
 
 // # Placeholder until the engine passes a real timeline via --props
@@ -20,6 +21,7 @@ const EMPTY_TIMELINE: EpisodeTimeline = { fps: FPS, durationInFrames: 90, shots:
 export const ArtCompositions: React.FC = () => (
   <>
     {/* # the owner-approved LW hero: 4 versions + 6 expressions (2026-11-13) */}
+    <Composition id="PoseLab" component={PoseLab as unknown as React.FC<Record<string, unknown>>} durationInFrames={1} fps={FPS} width={W} height={H} defaultProps={{ poses: [] }} />
     <Composition id="LWHeroSheet" component={HeroSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="LWHeroFaces" component={HeroFaces} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="LogoReveal" component={LogoReveal} durationInFrames={90} fps={FPS} width={W} height={H} />

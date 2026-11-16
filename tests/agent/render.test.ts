@@ -175,3 +175,21 @@ test('the piece list block is left out of the shared art hash; pieces are cached
   expect(fpr.idFile['mountain-summit']).toBeDefined()
   expect(fpr.idFile['house']).not.toBe(fpr.idFile['mountain-summit'])
 })
+
+// # Owner 2026-11-13 (LW sample Short): voice a bit louder and clearer → Shorts master at −11.5 LUFS,
+// # with a voice-only clarity chain (low cut + presence lift) ahead of the mix
+test('the Shorts mix lands at the owner-approved −11.5 LUFS with the voice clarity chain', async () => {
+  const { MIX, VOICE_CLARITY } = await import('../../agent/render')
+  expect(MIX.short.lufs).toBe(-11.5)
+  expect(MIX.short.voiceFx).toBe(VOICE_CLARITY)
+  expect(VOICE_CLARITY).toMatch(/highpass=f=80/)
+  expect(VOICE_CLARITY).toMatch(/equalizer=f=3000/)
+  const dir = mkdtempSync(join(tmpdir(), 'lwmix-'))
+  const voice = join(dir, 'voice.wav')
+  await tone(voice, 6, -20)
+  const out = join(dir, 'mix.wav')
+  mixAudio(voice, [{ name: 'impact', t: 2, volume: 1 }], 7, out, undefined, MIX.short)
+  const l = loudness(out)
+  expect(Math.abs(l.lufs - -11.5)).toBeLessThanOrEqual(0.5)
+  expect(l.peak).toBeLessThanOrEqual(-0.9)
+}, 120_000)
